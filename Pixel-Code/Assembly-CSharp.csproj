@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\Interpreter\AST\Node.cs" />
     <Compile Include="Assets\Scripts\NewBehaviourScript.cs" />
     <Compile Include="Assets\Scripts\Instructions\DrawRectangle.cs" />
+    <Compile Include="Assets\Scripts\Instructions\Fill.cs" />
     <Compile Include="Assets\Scripts\PixelUN.cs" />
     <Compile Include="Assets\Scripts\Interpreter\Tokens&amp;Enums\Token.cs" />
     <Compile Include="Assets\Scripts\Wall.cs" />

@@ -16,6 +16,7 @@ public class DrawPixel : Instruction
         if(!Wall.IsPosible(Row, Column)) return;
         Wall.Row = Row;
         Wall.Column = Column;
-        Wall.PaintPixel(Color);
+        Wall.Color = Color;
+        Wall.PaintPixel();
     }
 }

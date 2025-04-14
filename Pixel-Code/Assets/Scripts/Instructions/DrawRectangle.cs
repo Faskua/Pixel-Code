@@ -26,25 +26,50 @@ public class DrawRectangle : Instruction
     public override void Paint()
     {
         int centerRow = Wall.Row + Dy * Distance, centerColumn = Wall.Column + Dx * Distance;
-        int upLeftR = centerRow - Height / 2, upLeftC = centerColumn - Width / 2;
-        int downRightR = centerRow + Height / 2, downRightC = centerColumn + Width / 2;
+        int LeftR = centerRow, LeftC = centerColumn - Width / 2;
+        int RightR = centerRow, RightC = centerColumn + Width / 2;
+        int UpR = centerRow - Height / 2, UpC = centerColumn;
+        int DownR = centerRow + Height / 2, DownC = centerColumn;
 
-        Instruction LineUp = new DrawLine(Wall, 1, 0, Width) ;
-        Instruction LineDown = new DrawLine(Wall, -1, 0, Width);
-        Instruction LineLeft = new DrawLine(Wall, 0, 1, Height);
-        Instruction LineRight = new DrawLine(Wall, 0, -1, Height);
+        Instruction forUse;
 
-        if(Wall.IsPosible(upLeftR, upLeftC)){
-            Wall.Row = upLeftR;
-            Wall.Column = upLeftC;
-            Wall.PaintInstruction(LineUp);
-            Wall.PaintInstruction(LineLeft);
+        if(Wall.IsPosible(LeftR, LeftC)){
+            Wall.Row = LeftR;
+            Wall.Column = LeftC;
+            forUse = new DrawLine(Wall, 0, -1, Height / 2);
+            Wall.PaintInstruction(forUse);
+            Wall.Row = LeftR;
+            Wall.Column = LeftC;
+            forUse = new DrawLine(Wall, 0,  1, Height / 2);
+            Wall.PaintInstruction(forUse);
         }
-        if(Wall.IsPosible(downRightR, downRightC)){
-            Wall.Row = downRightR;
-            Wall.Column = downRightC;
-            Wall.PaintInstruction(LineDown);
-            Wall.PaintInstruction(LineRight);
+        if(Wall.IsPosible(RightR, RightC)){
+            Wall.Row = RightR;
+            Wall.Column = RightC;
+            forUse = new DrawLine(Wall, 0, -1, Height / 2);
+            Wall.PaintInstruction(forUse);
+            Wall.Row = RightR;
+            Wall.Column = RightC;
+            forUse = new DrawLine(Wall, 0,  1, Height / 2);
+            Wall.PaintInstruction(forUse);
+        }if(Wall.IsPosible(UpR, UpC)){
+            Wall.Row = UpR;
+            Wall.Column = UpC;
+            forUse = new DrawLine(Wall, -1, 0, (Width / 2) + 1 );
+            Wall.PaintInstruction(forUse);
+            Wall.Row = UpR;
+            Wall.Column = UpC;
+            forUse = new DrawLine(Wall, 1,  0, (Width / 2) + 1 );
+            Wall.PaintInstruction(forUse);
+        }if(Wall.IsPosible(DownR, DownC)){
+            Wall.Row = DownR;
+            Wall.Column = DownC;
+            forUse = new DrawLine(Wall, -1, 0, (Width / 2) + 1 );
+            Wall.PaintInstruction(forUse);
+            Wall.Row = DownR;
+            Wall.Column = DownC;
+            forUse = new DrawLine(Wall, 1,  0, (Width / 2) + 1 );
+            Wall.PaintInstruction(forUse);
         }
         Wall.Row = centerRow;
         Wall.Column = centerColumn;

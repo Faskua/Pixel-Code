@@ -24,7 +24,7 @@ public class DrawLine : Instruction
         for (int i = 0; i < Distance; i++)
         {
             int newRow = Wall.Row + Dy, newCol =  Wall.Column + Dx;
-            Wall.PaintPixel(Wall.Color);
+            Wall.PaintPixel();
             if(!Wall.IsPosible(newRow, newCol)) return;
             Wall.Row = newRow;
             Wall.Column = newCol;

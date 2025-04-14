@@ -19,7 +19,7 @@ public class NewBehaviourScript : MonoBehaviour
             wall.Row = row;
             wall.Column = col;
         }
-        wall.PaintPixel("Blue");
+        wall.PaintPixel();
     } 
 
     public void PaintLine(){
@@ -30,6 +30,16 @@ public class NewBehaviourScript : MonoBehaviour
     public void PaintRectangle(){
         Instruction rectangle = new DrawRectangle(wall,Dx,Dy,Distance,width,height);
         wall.PaintInstruction(rectangle);
+    }
+
+    public void PaintCircle(){
+        Instruction rectangle = new DrawCircle(wall,row,col,Distance);
+        wall.PaintInstruction(rectangle);
+    }
+
+    public void Fill(){
+        Instruction fill = new Fill(wall);
+        wall.PaintInstruction(fill);
     }
 
     void Start()

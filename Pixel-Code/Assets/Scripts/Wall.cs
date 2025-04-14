@@ -27,7 +27,7 @@ public class Wall : MonoBehaviour
         if(size % 2 != 0) BrushSize = size;
         else BrushSize = size-1;
     }
-    public void PaintPixel(string newcolor){
+    public void PaintPixel(){
         int halfBrush = BrushSize / 2;
         int upRow = Row - halfBrush, downRow = Row + halfBrush;
         int leftCol = Column - halfBrush, rightCol = Column + halfBrush;
@@ -36,11 +36,12 @@ public class Wall : MonoBehaviour
             for (int nCol = leftCol; nCol <= rightCol; nCol++)
             {
                 if(!IsPosible(nRow, nCol)) continue;
-                Pixels[nRow,nCol].GetComponent<PixelUN>().Change(newcolor);
+                Pixels[nRow,nCol].GetComponent<PixelUN>().Change(Color);
             }
         }
         
     }
+    public string GetPixelColor(int row, int col) => Pixels[row,col].GetComponent<PixelUN>().Color;
     public void PaintInstruction(Instruction instruction) => instruction.Paint();
     public bool IsPosible(int row, int col) => row >= 0 && row < Size && col >= 0 && col < Size;
 
@@ -79,6 +80,5 @@ public class Wall : MonoBehaviour
         // Row = row;
         // Column = col; 
         // PaintPixel(colors[index]);
-        // Debug.Log($"El color es: {colors[index]}");
     }
 }
