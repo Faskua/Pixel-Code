@@ -43,6 +43,7 @@ public class Wall : MonoBehaviour
     }
     public string GetPixelColor(int row, int col) => Pixels[row,col].GetComponent<PixelUN>().Color;
     public void PaintInstruction(Instruction instruction) => instruction.Paint();
+    public int EvaluateFunction(Function function) => function.Evaluate();
     public bool IsPosible(int row, int col) => row >= 0 && row < Size && col >= 0 && col < Size;
 
     void GenerateWall(){
