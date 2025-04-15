@@ -1,12 +1,12 @@
 using System;
 
-public abstract class BinaryExpression : ASTNode
+public abstract class BinaryExpression : Expression
 {
-    public ASTNode Left { get; private set; }
+    public Expression Left { get; private set; }
     public Token Operation { get; private set; }
-    public ASTNode Right { get; private set; }
+    public Expression Right { get; private set; }
 
-    public BinaryExpression(ASTNode left, Token  op, ASTNode right, IDType type) : base(type, left.Location){
+    public BinaryExpression(Expression left, Token  op, Expression right, IDType type) : base(type, left.Location){
         Left = left;
         Operation = op;
         Right = right;
@@ -15,7 +15,7 @@ public abstract class BinaryExpression : ASTNode
 
 public class NumericBinaryOperation : BinaryExpression
 {
-    public NumericBinaryOperation(ASTNode left, Token op, ASTNode right) : base(left, op, right, IDType.Numeric) {}
+    public NumericBinaryOperation(Expression left, Token op, Expression right) : base(left, op, right, IDType.Numeric) {}
     public override bool Validate(){
         bool types = Left.CheckType(IDType.Numeric) && Right.CheckType(IDType.Numeric);
         string op = Operation.Value;
@@ -49,7 +49,7 @@ public class NumericBinaryOperation : BinaryExpression
 
 public class BooleanBinaryExpression : BinaryExpression
 {
-    public BooleanBinaryExpression(ASTNode left, Token op, ASTNode right) : base(left, op, right, IDType.Boolean) {}
+    public BooleanBinaryExpression(Expression left, Token op, Expression right) : base(left, op, right, IDType.Boolean) {}
     public override bool Validate()
     {
         string op = Operation.Value;
