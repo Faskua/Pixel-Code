@@ -17,8 +17,22 @@ public static class Global
         if(Variables.ContainsKey(name))     Variables[name] = variable;
         else     Variables.Add(name, variable);
     }
+    public static Expression GetVariable(string name, CodeLocation location){
+        if(!Variables.ContainsKey(name)){
+            Errors.Add($"Use of a not assigned variable at line: {location.Line}, column: {location.Column}");
+            return null;
+        } 
+        return Variables[name];        
+    }
+    public static Statement GetLable(string name, CodeLocation location){
+        if(!Labels.ContainsKey(name)){
+            Errors.Add($"Use of a not assigned label at line: {location.Line}, column: {location.Column}");
+            return null;
+        } 
+        return Labels[name];        
+    }
     public static void AddTag(string name, Statement body){
-        if(Labels.ContainsKey(name)) Global.Errors.Add($"Use of an already assigned tag at line: {body.Location.Line}, column: {body.Location.Column}");
+        if(Labels.ContainsKey(name)) Global.Errors.Add($"Use of an already assigned label at line: {body.Location.Line}, column: {body.Location.Column}");
         else Labels.Add(name, body);
     }
 }
