@@ -17,7 +17,7 @@ public class NumericBinaryOperation : BinaryExpression
 {
     public NumericBinaryOperation(Expression left, Token op, Expression right) : base(left, op, right, IDType.Numeric) {}
     public override bool Validate(){
-        bool types = Left.CheckType(IDType.Numeric) && Right.CheckType(IDType.Numeric);
+        bool types = Left.Validate() && Right.Validate();
         string op = Operation.Value;
         bool operation = op == "+" || op == "-" || op == "*" || op == "/" || op == "**" || op == "%";
         return types && operation;
@@ -53,11 +53,12 @@ public class BooleanBinaryExpression : BinaryExpression
     public override bool Validate()
     {
         string op = Operation.Value;
-        if(op == "&&" || op == "||") return Left.CheckType(IDType.Boolean) && Right.CheckType(IDType.Boolean);
+        bool output = true;
+        if(op == "&&" || op == "||") output = Left.CheckType(IDType.Boolean) && Right.CheckType(IDType.Boolean);
         
-        if(op == ">" || op == "<" || op == ">=" || op == "<=") return Left.CheckType(IDType.Numeric) && Right.CheckType(IDType.Numeric);
+        if(op == ">" || op == "<" || op == ">=" || op == "<=" || op == "==") output = Left.CheckType(IDType.Numeric) && Right.CheckType(IDType.Numeric);
 
-        return false;
+        return output && Left.Validate() && Right.Validate();
     }
     public override object Evaluate()
     {
