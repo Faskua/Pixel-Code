@@ -5,9 +5,12 @@ public static class Global
 {
     public static Dictionary<string, Expression> Variables { get; set; }
     public static Dictionary<string, Statement> Labels { get; set; }
+    public static List<string> Errors { get; set; }
 
     public static void Reset(){
         Variables = new Dictionary<string, Expression>();
+        Labels = new Dictionary<string, Statement>();
+        Errors = new List<string>();
     }
     public static void AddVariable(string name, Expression variable){
         if(Variables == null) Reset();
@@ -15,7 +18,7 @@ public static class Global
         else     Variables.Add(name, variable);
     }
     public static void AddTag(string name, Statement body){
-        if(Labels.ContainsKey(name)) throw new Exception($"Use of an already assigned tag at line: {body.Location.Line}, column: {body.Location.Column}");
+        if(Labels.ContainsKey(name)) Global.Errors.Add($"Use of an already assigned tag at line: {body.Location.Line}, column: {body.Location.Column}");
         else Labels.Add(name, body);
     }
 }

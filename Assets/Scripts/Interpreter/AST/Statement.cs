@@ -32,7 +32,7 @@ public class Declaration : Statement
     }
 
     public override bool Validate(){
-        if(Global.Variables.ContainsKey(Name)) throw new Exception($"Use of an already assigned variable at line: {Variable.Location.Line}, column: {Variable.Location.Column}");
+        if(Global.Variables.ContainsKey(Name)) Global.Errors.Add($"Use of an already assigned variable at line: {Variable.Location.Line}, column: {Variable.Location.Column}");
 
         return Variable.Validate();
     }
@@ -49,7 +49,7 @@ public class Assignation : Statement
     }
 
     public override bool Validate(){
-        if(!Global.Variables.ContainsKey(Name)) throw new Exception($"Not assigned variable at line: {Variable.Location.Line}, column: {Variable.Location.Column}");
+        if(!Global.Variables.ContainsKey(Name)) Global.Errors.Add($"Not assigned variable at line: {Variable.Location.Line}, column: {Variable.Location.Column}");
         
         return Variable.Validate() && Global.Variables[Name].Type == Variable.Type;
     }

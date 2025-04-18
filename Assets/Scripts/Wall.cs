@@ -9,6 +9,7 @@ public class Wall : MonoBehaviour
 {
     public GameObject[,] Pixels;
     public GameObject Pixel;
+    public GameObject WallE;
     public string Color;
     public int Row;
     public int Column;
@@ -21,6 +22,12 @@ public class Wall : MonoBehaviour
         Size = size;
         PixelSize = 1024 / size;
         GenerateWall(); 
+        Row = 0;
+        Column = 0;
+        var transform = WallE.GetComponent<RectTransform>();
+        transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, PixelSize);
+        transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, PixelSize);
+
     }
     public void ChangeBrushSize(int size){
         if(BrushSize <= 0) return;
@@ -39,7 +46,7 @@ public class Wall : MonoBehaviour
                 Pixels[nRow,nCol].GetComponent<PixelUN>().Change(Color);
             }
         }
-        
+        WallE.GetComponent<Transform>().position = Pixels[Row, Column].GetComponent<Transform>().position;
     }
     public string GetPixelColor(int row, int col) => Pixels[row,col].GetComponent<PixelUN>().Color;
     public void PaintInstruction(Instruction instruction) => instruction.Paint();
@@ -47,6 +54,7 @@ public class Wall : MonoBehaviour
     public bool IsPosible(int row, int col) => row >= 0 && row < Size && col >= 0 && col < Size;
 
     void GenerateWall(){
+        WallE.GetComponent<Transform>().position = new Vector2(-420, 0);
         if(Pixels != null){
             for (int row = 0; row < Pixels.GetLength(0); row++)
             {
@@ -75,11 +83,12 @@ public class Wall : MonoBehaviour
         BrushSize = 1;
     }
     void Update(){
-        // if(Pixels == null) return;
-        // System.Random random = new System.Random();
-        // int index = random.Next(0, 9), row = random.Next(0,Size), col = random.Next(0,Size);
-        // Row = row;
-        // Column = col; 
-        // PaintPixel(colors[index]);
+        if(Pixels == null) return;
+        System.Random random = new System.Random();
+        int index = random.Next(0, 9), row = random.Next(0,Size), col = random.Next(0,Size);
+        Row = row;
+        Column = col; 
+        Color = colors[index];
+        PaintPixel();
     }
 }

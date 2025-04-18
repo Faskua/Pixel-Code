@@ -26,6 +26,16 @@ public class Boolean : Expression
     public override object Evaluate() => Value;
 }
 
+public class ColorExpression : Expression
+{
+    public string Value { get; private set; }
+    public ColorExpression(string value, CodeLocation location) : base(IDType.Color, location){
+        Value = value;
+    }
+    public override bool Validate() => Type == IDType.Color;
+    public override object? Evaluate() => Value;
+}
+
 public class Variable : Expression
 {
     public string Name { get; private set; }

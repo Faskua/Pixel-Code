@@ -25,7 +25,7 @@ public class NumericBinaryOperation : BinaryExpression
 
     public override object Evaluate()
     {
-        if(!Validate()) throw new Exception($"An error ocured at line: {Location.Line}, column: {Location.Column}");
+        if(!Validate()) Global.Errors.Add($"An error ocured at line: {Location.Line}, column: {Location.Column}");
         double left = (double)Left.Evaluate();
         double right = (double)Right.Evaluate();
         switch (Operation.Value)
@@ -35,7 +35,7 @@ public class NumericBinaryOperation : BinaryExpression
             case("*"):
                 return left * right;
             case("/"):
-                if(right== 0) throw new Exception($"Attempt to divide by zero at line: {Right.Location.Line}, column: {Right.Location.Column}"); //esto hay que cambiarlo para guardar los errores
+                if(right== 0) Global.Errors.Add($"Attempt to divide by zero at line: {Right.Location.Line}, column: {Right.Location.Column}"); //esto hay que cambiarlo para guardar los errores
                 return left / right;
             case("**"):
                 return Math.Pow(left, right);
@@ -61,7 +61,7 @@ public class BooleanBinaryExpression : BinaryExpression
     }
     public override object Evaluate()
     {
-        if(!Validate()) throw new Exception($"An error ocured at line: {Location.Line}, column {Location.Column}");
+        if(!Validate()) Global.Errors.Add($"An error ocured at line: {Location.Line}, column {Location.Column}");
         string operation = Operation.Value;
         if(operation == "&&" || operation == "||"){
             bool left = (bool)Left.Evaluate(), right = (bool)Right.Evaluate();

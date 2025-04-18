@@ -32,7 +32,8 @@ public enum TokenType
 
 public enum IDType{
     Numeric,    Boolean,
-    String,     Function
+    Function,   Color
+    
 }
 
 public enum PixelColor{
