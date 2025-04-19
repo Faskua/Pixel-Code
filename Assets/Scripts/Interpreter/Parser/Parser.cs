@@ -73,6 +73,7 @@ public class Parser
             left = new NumericBinaryOperation(left, operation, right);
             LookAhead();
         }
+        nextToken = Tokens[--pos];
         if(!left.Validate()) return null;
         return left;
     }
@@ -80,7 +81,7 @@ public class Parser
         List<TokenType> operators = new List<TokenType> {TokenType.And, TokenType.Or, TokenType.Less, TokenType.Greater,
                                                         TokenType.Equal, TokenType.LessEqual, TokenType.GreaterEqual};
         Expression left = null;
-        if(nextToken.Type == TokenType.Int) left = new Number(double.Parse(nextToken.Value), nextToken.Location);
+        if(nextToken.Type == TokenType.Int) left = ParseNumber();
         else if(nextToken.Type == TokenType.True || nextToken.Type == TokenType.False) left = new Boolean(bool.TryParse(nextToken.Value, out bool result), nextToken.Location);
         else if(nextToken. Type == TokenType.Identifier) left = Global.GetVariable(nextToken.Value, nextToken.Location);
         else Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
@@ -92,7 +93,7 @@ public class Parser
             Consume(nextToken.Type);
             LookAhead(new List<TokenType> {TokenType.True, TokenType.False, TokenType.Int, TokenType.Identifier});
             Expression right = null;
-            if(nextToken.Type == TokenType.Int) right = new Number(double.Parse(nextToken.Value), nextToken.Location);
+            if(nextToken.Type == TokenType.Int) right = ParseNumber();
             else if(nextToken.Type == TokenType.True || nextToken.Type == TokenType.False) right = new Boolean(bool.TryParse(nextToken.Value, out bool result), nextToken.Location);
             else if(nextToken. Type == TokenType.Identifier) right = Global.GetVariable(nextToken.Value, nextToken.Location);
             else Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
@@ -106,4 +107,120 @@ public class Parser
     private Statement ParseVariable(){
         throw new NotImplementedException();
     }
+
+    #region ParseDSLExpressions
+
+        private Expression ParseGetActualX(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.GetActualX);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Expression output = new GetActualXExpression(IDType.GetActualX, location, Wall);
+            return output;
+        }
+        private Expression ParseGetActualY(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.GetActualY);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Expression output = new GetActualYExpression(IDType.GetActualY, location, Wall);
+            return output;
+        }
+        private Expression ParseGetCanvasSize(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.GetCanvasSize);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Expression output = new GetCanvasSizeExpression(IDType.GetCanvasSize, location, Wall);
+            return output;
+        }
+        private Expression ParseGetColorCount(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.GetColorCount);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(TokenType.PixelColor);
+            string color = nextToken.Value;
+            Consume(TokenType.PixelColor);
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression x1 = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression y1 = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression x2 = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression y2 = ParseNumber();
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Expression output = new GetColorCountExpression(IDType.GetColorCount, location, Wall, color, (int)x1.Evaluate(), (int)y1.Evaluate(), (int)x2.Evaluate(), (int)y2.Evaluate());
+            return output;
+        }
+        private Expression ParseIsBrushColor(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.IsBrushColor);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(TokenType.PixelColor);
+            string color = nextToken.Value;
+            Consume(TokenType.PixelColor);
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Expression output = new IsBrushColorExpression(IDType.IsBrushColor, location, Wall, color);
+            return output;
+        }
+        private Expression ParseIsBrushSize(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.IsBrushSize);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression size = ParseNumber();
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Expression output = new IsBrushSizeExpression(IDType.IsBrushSize, location, Wall, (int)size.Evaluate());
+            return output;
+        }
+        private Expression IsCanvasColor(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.IsCanvasColor);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(TokenType.PixelColor);
+            string color = nextToken.Value;
+            Consume(TokenType.PixelColor);
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression vertical = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression horizontal = ParseNumber();
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Expression output = new IsCanvasColorExpression(IDType.IsCanvasColor, location, Wall, color, (int)vertical.Evaluate(), (int)horizontal.Evaluate());
+            return output;
+        }
+
+    #endregion
+
+    #region ParseDSLStatements
+
+
+
+    #endregion
 }
