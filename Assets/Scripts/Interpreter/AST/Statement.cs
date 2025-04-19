@@ -31,30 +31,10 @@ public class Declaration : Statement
         Variable = variable;
     }
 
-    public override bool Validate(){
-        if(Global.Variables.ContainsKey(Name)) Global.Errors.Add($"Use of an already assigned variable at line: {Variable.Location.Line}, column: {Variable.Location.Column}");
-
-        return Variable.Validate();
-    }
+    public override bool Validate() => Variable.Validate();
     public override void Evaluate() => Global.AddVariable(Name, Variable);
 }
 
-public class Assignation : Statement
-{
-    public string Name { get; private set; }
-    public Expression Variable { get; private set; }
-    public Assignation(IDType type, CodeLocation location, string name, Expression variable) : base(type, location){
-        Name = name;
-        Variable = variable;
-    }
-
-    public override bool Validate(){
-        if(!Global.Variables.ContainsKey(Name)) Global.Errors.Add($"Not assigned variable at line: {Variable.Location.Line}, column: {Variable.Location.Column}");
-        
-        return Variable.Validate() && Global.Variables[Name].Type == Variable.Type;
-    }
-    public override void Evaluate() => Global.AddVariable(Name, Variable);
-}
 
 public class BlockStatement : Statement
 {

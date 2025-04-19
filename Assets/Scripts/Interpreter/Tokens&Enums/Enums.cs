@@ -32,8 +32,17 @@ public enum TokenType
 
 public enum IDType{
     Numeric,    Boolean,
-    Function,   Color
+    ColorPixel,
+
+    Spawn,      Color,
+    Size,       DrawLine,
+    DrawRectangle,      DrawCircle,
+    Fill,       
     
+    GetActualX,     GetActualY,
+    GetCanvasSize,      GetColorCount,
+    IsBrushColor,       IsBrushSize,
+    IsCanvasColor,      Goto
 }
 
 public enum PixelColor{
