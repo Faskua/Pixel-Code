@@ -194,7 +194,7 @@ public class Parser
             Expression output = new IsBrushSizeExpression(IDType.IsBrushSize, location, Wall, (int)size.Evaluate());
             return output;
         }
-        private Expression IsCanvasColor(){
+        private Expression ParseIsCanvasColor(){
             CodeLocation location = nextToken.Location;
             Consume(TokenType.IsCanvasColor);
             LookAhead(TokenType.LParen);
@@ -220,7 +220,125 @@ public class Parser
 
     #region ParseDSLStatements
 
-
+        private Statement ParseSpawn(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.Spawn);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression x = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression y = ParseNumber();
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Statement output = new SpawnStatement(IDType.Spawn, location, (int)x.Evaluate(), (int)y.Evaluate());
+            return output;
+        }
+        private Statement ParseColor(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.Color);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(TokenType.PixelColor);
+            Expression color = new ColorExpression(nextToken.Value, nextToken.Location);
+            Consume(TokenType.PixelColor);
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Statement output = new ColorStatement(IDType.Color, location, (string)color.Evaluate());
+            return output;
+        }
+        private Statement ParseSize(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.Size);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression size = ParseNumber();
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Statement output = new SizeStatement(IDType.Size, location, (int)size.Evaluate());
+            return output;
+        }
+        private Statement ParseDrawLine(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.DrawLine);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression dx = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression dy = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression distance = ParseNumber();
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Statement output = new LineStatement(IDType.DrawLine, location, (int)dx.Evaluate(), (int)dy.Evaluate(), (int)distance.Evaluate());
+            return output;
+        }
+        private Statement ParseDrawCircle(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.DrawCircle);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression x = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression y = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression radius = ParseNumber();
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Statement output = new LineStatement(IDType.DrawLine, location, (int)x.Evaluate(), (int)y.Evaluate(), (int)radius.Evaluate());
+            return output;
+        }
+        private Statement ParseDrawRectangle(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.DrawRectangle);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression dx = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression dy = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression distance = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression heigth = ParseNumber();
+            LookAhead(TokenType.Comma);
+            Consume(TokenType.Comma);
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            Expression width = ParseNumber();
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Statement output = new RectangleStatement(IDType.DrawRectangle, location, (int)dx.Evaluate(), (int)dy.Evaluate(), (int)distance.Evaluate(), (int)heigth.Evaluate(), (int)width.Evaluate());
+            return output;
+        }
+        private Statement ParseFill(){
+            CodeLocation location = nextToken.Location;
+            Consume(TokenType.Fill);
+            LookAhead(TokenType.LParen);
+            Consume(TokenType.LParen);
+            LookAhead(TokenType.RParen);
+            Consume(TokenType.RParen);
+            Statement output = new FillStatement(IDType.Fill, location);
+            return output;
+        }
 
     #endregion
 }
