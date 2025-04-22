@@ -49,6 +49,7 @@ public class Lexxer
                 }
                 column++;
             }
+            tokens.Add(new Token("", TokenType.EOL, new CodeLocation(line, column)));
             line ++;
             column = 0;
         }

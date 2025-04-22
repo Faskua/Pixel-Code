@@ -27,12 +27,12 @@ public enum TokenType
     IsBrushSize,    IsCanvasColor,
     GoTo,  
 
-    Unknown
+    Unknown,        EOL
 }
 
 public enum IDType{
     Numeric,    Boolean,
-    ColorPixel,
+    ColorPixel,     Declaration,
 
     Spawn,      Color,
     Size,       DrawLine,
@@ -42,7 +42,7 @@ public enum IDType{
     GetActualX,     GetActualY,
     GetCanvasSize,      GetColorCount,
     IsBrushColor,       IsBrushSize,
-    IsCanvasColor,      Goto
+    IsCanvasColor,      GoTo
 }
 
 public enum PixelColor{

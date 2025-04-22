@@ -10,8 +10,8 @@ public class Parser
 
     private bool EOF() => pos == Tokens.Count-1;
     private bool CanGo() => pos < Tokens.Count-1;
-    private Token NextTokenStay(){
-        if(CanGo()) return Tokens[pos + 1];
+    private Token NextTokenStay(int k = 1){
+        if(CanGo()) return Tokens[pos + k];
         return null;    
     }
     private Token NextTokenMove(){
@@ -100,12 +100,92 @@ public class Parser
             left = new BooleanBinaryExpression(left, operation, right);
             LookAhead();
         }
+        nextToken = Tokens[--pos];
         if(!left.Validate()) return null;
         return left;
     }
     //TODO
     private Statement ParseVariable(){
-        throw new NotImplementedException();
+        List<TokenType> DSLExpressions  = new List<TokenType> {
+            TokenType.GetActualX, TokenType.GetActualY, TokenType.GetCanvasSize, TokenType.GetColorCount, 
+            TokenType.IsBrushColor, TokenType.IsBrushSize, TokenType.IsCanvasColor
+        };
+        List<TokenType> BooleanOperators = new List<TokenType> {
+            TokenType.True, TokenType.False, TokenType.Equal, TokenType.Greater, 
+            TokenType.Less, TokenType.GreaterEqual, TokenType.LessEqual, TokenType.And, TokenType.Or
+        };
+        CodeLocation location = nextToken.Location;
+        string name = nextToken.Value;
+        Consume(TokenType.Identifier);
+        LookAhead(TokenType.Assignation);
+        Consume(TokenType.Assignation);
+        Expression variable = null;
+        LookAhead();
+        if(DSLExpressions.Contains(nextToken.Type)){
+            switch(nextToken.Type){
+                case TokenType.GetActualX:
+                    variable = ParseGetActualX();
+                break;
+                case TokenType.GetActualY:
+                    variable = ParseGetActualY();
+                break;
+                case TokenType.GetCanvasSize:
+                    variable = ParseGetCanvasSize();
+                break;
+                case TokenType.GetColorCount:
+                    variable = ParseGetColorCount();
+                break;
+                case TokenType.IsBrushColor:
+                    variable = ParseIsBrushColor();
+                break;
+                case TokenType.IsBrushSize:
+                    variable = ParseIsBrushSize();
+                break;
+                case TokenType.IsCanvasColor:
+                    variable = ParseIsCanvasColor();
+                break;
+                default:
+                break;
+            }
+        }
+        else{
+            int k = 0;
+            while(NextTokenStay(k).Type != TokenType.EOL){
+                if(BooleanOperators.Contains(NextTokenStay(k).Type)){
+                    variable = ParseBoolean();
+                    break;
+                }
+                k++;
+            }
+            if(variable == null){
+                if(nextToken.Type == TokenType.Identifier && NextTokenStay().Type == TokenType.EOL){
+                    variable = Global.GetVariable(nextToken.Value, NextTokenStay().Location);
+                    Consume(TokenType.Identifier);
+                } 
+                else variable = ParseNumber();
+            }
+        } 
+        Statement output = new Declaration(IDType.Declaration, location, name, variable);
+        return output;
+    }
+    private Statement ParseGoTo(){
+        CodeLocation location = nextToken.Location;
+        Consume(TokenType.GoTo);
+        LookAhead(TokenType.LBracket);
+        Consume(TokenType.LBracket);
+        LookAhead(TokenType.Identifier);
+        string label = nextToken.Value;
+        Consume(TokenType.Identifier);
+        LookAhead(TokenType.RBracket);
+        Consume(TokenType.RBracket);
+        LookAhead(TokenType.LParen);
+        Consume(TokenType.LParen);
+        LookAhead();
+        Expression condition = ParseBoolean();
+        LookAhead(TokenType.RParen);
+        Consume(TokenType.RParen);
+        Statement output = new GoTo(IDType.GoTo, location, label, condition);
+        return output;
     }
 
     #region ParseDSLExpressions
