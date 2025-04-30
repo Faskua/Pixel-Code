@@ -8,8 +8,8 @@ public abstract class Expression : ASTNode
 
 public class Number : Expression
 {
-    public double Value { get; private set; }
-    public Number(double value, CodeLocation location) : base(IDType.Numeric, location){
+    public int Value { get; private set; }
+    public Number(int value, CodeLocation location) : base(IDType.Numeric, location){
         Value = value;
     }
     public override bool Validate() => Type == IDType.Numeric;

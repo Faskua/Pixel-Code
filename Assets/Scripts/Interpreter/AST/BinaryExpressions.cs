@@ -26,12 +26,14 @@ public class NumericBinaryOperation : BinaryExpression
     public override object Evaluate()
     {
         if(!Validate()) Global.AddError($"An error ocured at line: {Location.Line}, column: {Location.Column}");
-        double left = (double)Left.Evaluate();
-        double right = (double)Right.Evaluate();
+        int left = (int)Left.Evaluate();
+        int right = (int)Right.Evaluate();
         switch (Operation.Value)
         {
             case("-"):
                 return left - right;
+            case("+"):
+                return left + right;
             case("*"):
                 return left * right;
             case("/"):
@@ -74,7 +76,7 @@ public class BooleanBinaryExpression : BinaryExpression
             }
         }
         else{
-            double left = (double)Left.Evaluate(), right = (double)Right.Evaluate();
+            int left = (int)Left.Evaluate(), right = (int)Right.Evaluate();
             switch (operation)
             {
                 case(">"):

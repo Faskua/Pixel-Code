@@ -24,7 +24,7 @@ public class Parser
             return;
         }
         if(types == null) nextToken = Tokens[pos+1] ;
-        if(types.Contains(Tokens[pos+1].Type)) nextToken = Tokens[pos+1];
+        else if(types.Contains(Tokens[pos+1].Type)) nextToken = Tokens[pos+1];
         else{
             Token token = Tokens[pos+1];
             Global.AddError($"UnexpectedToken at line: {token.Location.Line}, columnm: { token.Location.Column}");
@@ -53,28 +53,43 @@ public class Parser
         }
     }
 
-    private Expression ParseNumber(){
+    private Expression ParseNumber(int precedence = 0){
         List<TokenType> operators = new List<TokenType> {TokenType.Plus, TokenType.Minus, TokenType.Mult, TokenType.Div, TokenType.Pow};
         Expression left = null;
-        if(nextToken.Type == TokenType.Int) left = new Number(double.Parse(nextToken.Value), nextToken.Location);
-        else if(nextToken. Type == TokenType.Identifier) left = Global.GetVariable(nextToken.Value, nextToken.Location);
-        else Global.AddError($"Unvalid number expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
-        Consume(nextToken.Type);
-        LookAhead();
-
-        while(operators.Contains(nextToken.Type)){
-            Token operation = nextToken;
-            Consume(operation.Type);
-            LookAhead(new List<TokenType> { TokenType.Int, TokenType.Identifier });
-            Expression right = null;
-            if(nextToken.Type == TokenType.Int) left = new Number(double.Parse(nextToken.Value), nextToken.Location);
-            else if(nextToken. Type == TokenType.Identifier) left = Global.GetVariable(nextToken.Value, nextToken.Location);
-            else Global.AddError($"Unvalid number expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
-            left = new NumericBinaryOperation(left, operation, right);
-            LookAhead();
+        switch(nextToken.Type){
+            case TokenType.Int:
+                left = new Number(int.Parse(nextToken.Value), nextToken.Location);
+                Consume(TokenType.Int);
+            break;
+            case TokenType.Identifier:
+                Expression variable = Global.GetVariable(nextToken.Value, nextToken.Location);
+                try{
+                    left = new Number((int)variable.Evaluate(), variable.Location);
+                    Consume(TokenType.Identifier);
+                }
+                catch (Exception){
+                    Global.AddError($"Cannot convert from {variable.Type} to int at line: {variable.Location.Line}, column: {variable.Location.Column}");
+                }
+            break;
+            default:
+                Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+            break;
         }
-        nextToken = Tokens[--pos];
-        if(!left.Validate()) return null;
+        LookAhead();
+        int OPprecedence = 0;
+        if(operators.Contains(nextToken.Type)){
+            if(nextToken.Type == TokenType.Plus || nextToken.Type == TokenType.Minus) OPprecedence = 1;
+            else if(nextToken.Type == TokenType.Mult || nextToken.Type == TokenType.Div) OPprecedence = 2;
+            else OPprecedence = 3;
+        }
+        while(nextToken.Type != TokenType.EOL && precedence < OPprecedence){
+            Token op = nextToken;
+            Consume(nextToken.Type);
+            LookAhead();
+            Expression right = ParseNumber(OPprecedence);
+            left = new NumericBinaryOperation(left, op, right);
+        }
+        
         return left;
     }
     private Expression ParseBoolean(){
