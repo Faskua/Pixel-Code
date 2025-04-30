@@ -52,7 +52,72 @@ public class Parser
             Consume(type);
         }
     }
+    public List<Statement> Parse(List<Token> tokens){
+        var Statements = new List<Statement>();
+        Tokens = tokens;
+        pos = -1;
+        string currentLabel = "";
+        CodeLocation labelLocation = null;
+        var LabelStatements = new List<Statement>();
+        LookAhead();
+        while(nextToken.Type != TokenType.EOF){
+            Statement current = null;
+            switch(nextToken.Type){
+                case TokenType.EOL:
+                    Consume(TokenType.EOL);
+                break;
+                case TokenType.GoTo:
+                    current = ParseGoTo();
+                break;
+                case TokenType.Identifier:
+                    current = ParseVariable();
+                break;
+                case TokenType.Spawn:
+                    current = ParseSpawn();
+                break;
+                case TokenType.Color:
+                    current = ParseColor();
+                break;
+                case TokenType.Size:
+                    current = ParseSize();
+                break;
+                case TokenType.DrawLine:
+                    current = ParseDrawLine();
+                break;
+                case TokenType.DrawCircle:
+                    current = ParseDrawCircle();
+                break;
+                case TokenType.DrawRectangle:
+                    current = ParseDrawRectangle();
+                break;
+                case TokenType.Fill:
+                    current = ParseFill();
+                break;
+                case TokenType.Label:
+                    if(currentLabel == ""){
+                        currentLabel = nextToken.Value;
+                        labelLocation = nextToken.Location;
+                        LabelStatements = new List<Statement>();
+                    }  
+                    else{
+                        Statement block = new BlockStatement(IDType.Block, labelLocation, LabelStatements);
+                        Global.AddLabel(currentLabel, block);
+                        currentLabel = "";
+                    }
+                break;
+                default:
+                    Consume(nextToken.Type);
+                    Global.AddError($"Unexpected statement at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                break;
+                if(currentLabel != "") LabelStatements.Add(current);
+                Statements.Add(current);
+            }
+            LookAhead();
+        }
+        return Statements;
+    }
 
+    #region ParseExpressions
     private Expression ParseNumber(int precedence = 0){
         List<TokenType> operators = new List<TokenType> {TokenType.Plus, TokenType.Minus, TokenType.Mult, TokenType.Div, TokenType.Pow};
         Expression left = null;
@@ -119,7 +184,6 @@ public class Parser
         if(!left.Validate()) return null;
         return left;
     }
-    //TODO
     private Statement ParseVariable(){
         List<TokenType> DSLExpressions  = new List<TokenType> {
             TokenType.GetActualX, TokenType.GetActualY, TokenType.GetCanvasSize, TokenType.GetColorCount, 
@@ -202,7 +266,7 @@ public class Parser
         Statement output = new GoTo(IDType.GoTo, location, label, condition);
         return output;
     }
-
+    #endregion
     #region ParseDSLExpressions
 
         private Expression ParseGetActualX(){

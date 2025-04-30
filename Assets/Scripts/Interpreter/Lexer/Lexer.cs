@@ -54,6 +54,7 @@ public class Lexxer
             column = 0;
         }
         if(Marks) Global.AddError($"Missing clousing quote mark at line: {lastMark.line}, column: {lastMark.column}");
+        tokens.Add(new Token("", TokenType.EOF, new CodeLocation(Splited.Length+1, 1)));
         return tokens;
     }
 
