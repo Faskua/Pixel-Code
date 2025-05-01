@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Parser 
 {
-    public List<Token> Tokens { get; set;}
+    private List<Token> Tokens { get; set;}
     private int pos { get; set; }
     private Token nextToken { get; set; }
     private Wall Wall { get; set; }
@@ -94,25 +94,27 @@ public class Parser
                     current = ParseFill();
                 break;
                 case TokenType.Label:
-                    if(currentLabel == ""){
-                        currentLabel = nextToken.Value;
-                        labelLocation = nextToken.Location;
-                        LabelStatements = new List<Statement>();
-                    }  
-                    else{
+                    if(currentLabel != ""){
                         Statement block = new BlockStatement(IDType.Block, labelLocation, LabelStatements);
                         Global.AddLabel(currentLabel, block);
-                        currentLabel = "";
-                    }
+                    }  
+                    currentLabel = nextToken.Value;
+                    labelLocation = nextToken.Location;
+                    LabelStatements = new List<Statement>();
                 break;
                 default:
                     Consume(nextToken.Type);
                     Global.AddError($"Unexpected statement at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
                 break;
-                if(currentLabel != "") LabelStatements.Add(current);
-                Statements.Add(current);
+                
             }
+            if(currentLabel != "") LabelStatements.Add(current);
+            if(current != null)Statements.Add(current);
             LookAhead();
+        }
+        if(currentLabel != ""){
+            Statement block = new BlockStatement(IDType.Block, labelLocation, LabelStatements);
+            Global.AddLabel(currentLabel, block);
         }
         return Statements;
     }
@@ -157,32 +159,75 @@ public class Parser
         
         return left;
     }
-    private Expression ParseBoolean(){
-        List<TokenType> operators = new List<TokenType> {TokenType.And, TokenType.Or, TokenType.Less, TokenType.Greater,
-                                                        TokenType.Equal, TokenType.LessEqual, TokenType.GreaterEqual};
-        Expression left = null;
-        if(nextToken.Type == TokenType.Int) left = ParseNumber();
-        else if(nextToken.Type == TokenType.True || nextToken.Type == TokenType.False) left = new Boolean(bool.TryParse(nextToken.Value, out bool result), nextToken.Location);
-        else if(nextToken. Type == TokenType.Identifier) left = Global.GetVariable(nextToken.Value, nextToken.Location);
-        else Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
-        Consume(nextToken.Type);
-        LookAhead();
+    // private Expression ParseBoolean(){
+    //     List<TokenType> operators = new List<TokenType> {TokenType.And, TokenType.Or, TokenType.Less, TokenType.Greater,
+    //                                                     TokenType.Equal, TokenType.LessEqual, TokenType.GreaterEqual};
+    //     Expression left = null;
+    //     if(nextToken.Type == TokenType.Int) left = ParseNumber();
+    //     else if(nextToken.Type == TokenType.True || nextToken.Type == TokenType.False) left = new Boolean(bool.TryParse(nextToken.Value, out bool result), nextToken.Location);
+    //     else if(nextToken. Type == TokenType.Identifier) left = Global.GetVariable(nextToken.Value, nextToken.Location);
+    //     else Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+    //     Consume(nextToken.Type);
+    //     LookAhead();
 
-        while(operators.Contains(nextToken.Type)){
-            Token operation = nextToken;
+    //     while(operators.Contains(nextToken.Type)){
+    //         Token operation = nextToken;
+    //         Consume(nextToken.Type);
+    //         LookAhead(new List<TokenType> {TokenType.True, TokenType.False, TokenType.Int, TokenType.Identifier});
+    //         Expression right = null;
+    //         if(nextToken.Type == TokenType.Int) right = ParseNumber();
+    //         else if(nextToken.Type == TokenType.True || nextToken.Type == TokenType.False) right = new Boolean(bool.TryParse(nextToken.Value, out bool result), nextToken.Location);
+    //         else if(nextToken. Type == TokenType.Identifier) right = Global.GetVariable(nextToken.Value, nextToken.Location);
+    //         else Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+    //         left = new BooleanBinaryExpression(left, operation, right);
+    //         LookAhead();
+    //     }
+    //     nextToken = Tokens[--pos];
+    //     if(!left.Validate()) return null;
+    //     return left;
+    // }
+    private Expression ParseBoolean(){
+        Expression left = ParseSimpleBoolean();
+        LookAhead();
+        while(nextToken.Type == TokenType.And || nextToken.Type == TokenType.Or){
+            Token op = nextToken;
             Consume(nextToken.Type);
-            LookAhead(new List<TokenType> {TokenType.True, TokenType.False, TokenType.Int, TokenType.Identifier});
-            Expression right = null;
-            if(nextToken.Type == TokenType.Int) right = ParseNumber();
-            else if(nextToken.Type == TokenType.True || nextToken.Type == TokenType.False) right = new Boolean(bool.TryParse(nextToken.Value, out bool result), nextToken.Location);
-            else if(nextToken. Type == TokenType.Identifier) right = Global.GetVariable(nextToken.Value, nextToken.Location);
-            else Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
-            left = new BooleanBinaryExpression(left, operation, right);
+            Expression right = ParseSimpleBoolean();
+            left = new BooleanBinaryExpression(left, op, right);
             LookAhead();
         }
         nextToken = Tokens[--pos];
-        if(!left.Validate()) return null;
         return left;
+    }
+    private Expression ParseSimpleBoolean(){
+        if(nextToken.Type == TokenType.True || nextToken.Type == TokenType.False){
+            bool value = nextToken.Type == TokenType.True;
+            Expression output = new Boolean(value, nextToken.Location);
+            Consume(nextToken.Type);
+            return output;
+        }
+        else if(nextToken.Type == TokenType.Int) return ParseNumericalBoolean();
+        else{
+            Expression variable = Global.GetVariable(nextToken.Value, nextToken.Location);
+            if(variable.CheckType(IDType.Numeric)) return ParseNumericalBoolean();
+            else{
+                if(!variable.CheckType(IDType.Boolean)) Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                Consume(TokenType.Identifier);
+                return (variable as Variable).Value;
+            } 
+        }
+    }
+    private Expression ParseNumericalBoolean(){
+        List<TokenType> NumericalOperators = new List<TokenType> {TokenType.Less, TokenType.Greater,
+                                                                  TokenType.Equal, TokenType.LessEqual, TokenType.GreaterEqual};
+        Expression left = ParseNumber();
+        LookAhead(NumericalOperators);
+        Token op = nextToken;
+        Consume(nextToken.Type);
+        LookAhead(new List<TokenType> {TokenType.Int, TokenType.Identifier});
+        Expression right = ParseNumber();
+        Expression output = new BooleanBinaryExpression(left, op, right);
+        return output;
     }
     private Statement ParseVariable(){
         List<TokenType> DSLExpressions  = new List<TokenType> {

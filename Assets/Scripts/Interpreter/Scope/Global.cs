@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 
-public static class Global// : MonoBehavior
+public static class Global
 {
     //public static Wall Wall;
     public static Dictionary<string, Expression> Variables { get; set; }

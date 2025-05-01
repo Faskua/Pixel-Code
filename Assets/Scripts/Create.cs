@@ -13,7 +13,7 @@ public class Create : MonoBehaviour
         Lexxer lexer = new Lexxer();
         Parser parser = new Parser();
         var tokens = lexer.Tokenize(input);
-        parser.Tokens = tokens;
+        var statements = parser.Parse(tokens);
     }
 
     void Start(){
