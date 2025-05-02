@@ -16,18 +16,18 @@ public abstract class BinaryExpression : Expression
 public class NumericBinaryOperation : BinaryExpression
 {
     public NumericBinaryOperation(Expression left, Token op, Expression right) : base(left, op, right, IDType.Numeric) {}
-    public override bool Validate(){
-        bool types = Left.Validate() && Right.Validate();
+    public override bool Validate(Global Global){
+        bool types = Left.Validate(Global) && Right.Validate(Global);
         string op = Operation.Value;
         bool operation = op == "+" || op == "-" || op == "*" || op == "/" || op == "**" || op == "%";
         return types && operation;
     }
 
-    public override object Evaluate()
+    public override object Evaluate(Global Global)
     {
-        if(!Validate()) Global.AddError($"An error ocured at line: {Location.Line}, column: {Location.Column}");
-        int left = (int)Left.Evaluate();
-        int right = (int)Right.Evaluate();
+        if(!Validate(Global)) Global.AddError($"An error ocured at line: {Location.Line}, column: {Location.Column}");
+        int left = (int)Left.Evaluate(Global);
+        int right = (int)Right.Evaluate(Global);
         switch (Operation.Value)
         {
             case("-"):
@@ -52,7 +52,7 @@ public class NumericBinaryOperation : BinaryExpression
 public class BooleanBinaryExpression : BinaryExpression
 {
     public BooleanBinaryExpression(Expression left, Token op, Expression right) : base(left, op, right, IDType.Boolean) {}
-    public override bool Validate()
+    public override bool Validate(Global Global)
     {
         string op = Operation.Value;
         bool output = true;
@@ -60,14 +60,14 @@ public class BooleanBinaryExpression : BinaryExpression
         
         if(op == ">" || op == "<" || op == ">=" || op == "<=" || op == "==") output = Left.CheckType(IDType.Numeric) && Right.CheckType(IDType.Numeric);
 
-        return output && Left.Validate() && Right.Validate();
+        return output && Left.Validate(Global) && Right.Validate(Global);
     }
-    public override object Evaluate()
+    public override object Evaluate(Global Global)
     {
-        if(!Validate()) Global.AddError($"An error ocured at line: {Location.Line}, column {Location.Column}");
+        if(!Validate(Global)) Global.AddError($"An error ocured at line: {Location.Line}, column {Location.Column}");
         string operation = Operation.Value;
         if(operation == "&&" || operation == "||"){
-            bool left = (bool)Left.Evaluate(), right = (bool)Right.Evaluate();
+            bool left = (bool)Left.Evaluate(Global), right = (bool)Right.Evaluate(Global);
             switch(operation){
                 case("&&"):
                     return left && right;
@@ -76,7 +76,7 @@ public class BooleanBinaryExpression : BinaryExpression
             }
         }
         else{
-            int left = (int)Left.Evaluate(), right = (int)Right.Evaluate();
+            int left = (int)Left.Evaluate(Global), right = (int)Right.Evaluate(Global);
             switch (operation)
             {
                 case(">"):

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public abstract class Statement : ASTNode
 {
     public Statement(IDType type, CodeLocation location) : base(type, location){}
-    public abstract void Evaluate();
+    public abstract void Evaluate(Global Global);
 }
 
 public class GoTo : Statement
@@ -15,10 +15,10 @@ public class GoTo : Statement
         Label = label;
         Condition = condition;
     }
-    public override bool Validate() => Global.Labels.ContainsKey(Label) && Condition.CheckType(IDType.Boolean);
-    public override void Evaluate(){
-        if(!(bool)Condition.Evaluate()) return;
-        Global.Labels[Label].Evaluate();
+    public override bool Validate(Global Global) => Global.Labels.ContainsKey(Label) && Condition.CheckType(IDType.Boolean);
+    public override void Evaluate(Global Global){
+        if(!(bool)Condition.Evaluate(Global)) return;
+        Global.Labels[Label].Evaluate(Global);
     }
 }
 
@@ -31,8 +31,8 @@ public class Declaration : Statement
         Variable = variable;
     }
 
-    public override bool Validate() => Variable.Validate();
-    public override void Evaluate() => Global.AddVariable(Name, Variable);
+    public override bool Validate(Global Global) => Variable.Validate(Global);
+    public override void Evaluate(Global Global) => Global.AddVariable(Name, Variable);
 }
 
 
@@ -42,18 +42,18 @@ public class BlockStatement : Statement
     public BlockStatement(IDType type, CodeLocation location, List<Statement> statements) : base(type, location){
         Statements = statements;
     }
-    public override bool Validate(){
+    public override bool Validate(Global Global){
         bool output = true;
         foreach (Statement statement in Statements)
         {
-            output = output && statement.Validate();
+            output = output && statement.Validate(Global);
         }
         return output;
     }
-    public override void Evaluate(){
+    public override void Evaluate(Global Global){
         foreach (Statement statement in Statements)
         {
-            statement.Evaluate();
+            statement.Evaluate(Global);
         }
     }
 }

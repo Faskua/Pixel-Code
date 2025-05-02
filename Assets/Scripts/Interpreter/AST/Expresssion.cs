@@ -3,7 +3,7 @@ using System;
 public abstract class Expression : ASTNode
 {
     public Expression(IDType type, CodeLocation location) : base(type, location){}
-    public abstract object? Evaluate();
+    public abstract object? Evaluate(Global Global);
 }
 
 public class Number : Expression
@@ -12,8 +12,8 @@ public class Number : Expression
     public Number(int value, CodeLocation location) : base(IDType.Numeric, location){
         Value = value;
     }
-    public override bool Validate() => Type == IDType.Numeric;
-    public override object Evaluate() => Value;
+    public override bool Validate(Global Global) => Type == IDType.Numeric;
+    public override object Evaluate(Global Global) => Value;
 }
 
 public class Boolean : Expression
@@ -22,8 +22,8 @@ public class Boolean : Expression
     public Boolean(bool value, CodeLocation location) : base(IDType.Boolean, location){
         Value = value;
     }
-    public override bool Validate() => Type == IDType.Boolean;
-    public override object Evaluate() => Value;
+    public override bool Validate(Global Global) => Type == IDType.Boolean;
+    public override object Evaluate(Global Global) => Value;
 }
 
 public class ColorExpression : Expression
@@ -32,8 +32,8 @@ public class ColorExpression : Expression
     public ColorExpression(string value, CodeLocation location) : base(IDType.Color, location){
         Value = value;
     }
-    public override bool Validate() => Type == IDType.Color;
-    public override object? Evaluate() => Value;
+    public override bool Validate(Global Global) => Type == IDType.Color;
+    public override object? Evaluate(Global Global) => Value;
 }
 
 public class Variable : Expression
@@ -47,6 +47,6 @@ public class Variable : Expression
     public void ChangeValue(Expression node){
         Value = node;
     }
-    public override bool Validate() => Value.Validate();
-    public override object Evaluate() => Value.Evaluate();
+    public override bool Validate(Global Global) => Value.Validate(Global);
+    public override object Evaluate(Global Global) => Value.Evaluate(Global);
 }

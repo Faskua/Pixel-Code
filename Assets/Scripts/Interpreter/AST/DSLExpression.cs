@@ -7,8 +7,8 @@ public class GetActualXExpression : Expression
     public GetActualXExpression(IDType type, CodeLocation location, Wall wall) : base(type, location){
         Wall = wall;
     }
-    public override bool Validate() => Type == IDType.GetActualX;
-    public override object? Evaluate() => new GetActualX(Wall);
+    public override bool Validate(Global Global) => Type == IDType.GetActualX;
+    public override object? Evaluate(Global Global) => new GetActualX(Wall);
 }
 
 public class GetActualYExpression : Expression
@@ -17,8 +17,8 @@ public class GetActualYExpression : Expression
     public GetActualYExpression(IDType type, CodeLocation location, Wall wall) : base(type, location){
         Wall = wall;
     }
-    public override bool Validate() => Type == IDType.GetActualY;
-    public override object? Evaluate() => new GetActualY(Wall);
+    public override bool Validate(Global Global) => Type == IDType.GetActualY;
+    public override object? Evaluate(Global Global) => new GetActualY(Wall);
 }
 
 public class GetCanvasSizeExpression : Expression
@@ -27,8 +27,8 @@ public class GetCanvasSizeExpression : Expression
     public GetCanvasSizeExpression(IDType type, CodeLocation location, Wall wall) : base(type, location){
         Wall = wall;
     }
-    public override bool Validate() => Type == IDType.GetCanvasSize;
-    public override object? Evaluate() => new GetCanvasSize(Wall);
+    public override bool Validate(Global Global) => Type == IDType.GetCanvasSize;
+    public override object? Evaluate(Global Global) => new GetCanvasSize(Wall);
 }
 
 public class GetColorCountExpression : Expression
@@ -47,8 +47,8 @@ public class GetColorCountExpression : Expression
         Row2 = Math.Max(y1, y2);
         Col2 = Math.Max(x1, x2);
     }
-    public override bool Validate() => Type == IDType.GetColorCount;
-    public override object? Evaluate() => new GetColorCount(Wall, Color, Col1, Row1, Col2, Row2);
+    public override bool Validate(Global Global) => Type == IDType.GetColorCount;
+    public override object? Evaluate(Global Global) => new GetColorCount(Wall, Color, Col1, Row1, Col2, Row2);
 }
 
 public class IsBrushColorExpression : Expression
@@ -59,8 +59,8 @@ public class IsBrushColorExpression : Expression
         Wall = wall;
         Color = color;
     }
-    public override bool Validate() => Type == IDType.IsBrushColor;
-    public override object? Evaluate() => new IsBrushColor(Wall, Color);
+    public override bool Validate(Global Global) => Type == IDType.IsBrushColor;
+    public override object? Evaluate(Global Global) => new IsBrushColor(Wall, Color);
 }
 
 public class IsBrushSizeExpression : Expression
@@ -71,8 +71,8 @@ public class IsBrushSizeExpression : Expression
         Wall = wall;
         Size = size;
     }
-    public override bool Validate() => Type == IDType.IsBrushSize;
-    public override object? Evaluate() => new IsBrushSize(Wall, Size);
+    public override bool Validate(Global Global) => Type == IDType.IsBrushSize;
+    public override object? Evaluate(Global Global) => new IsBrushSize(Wall, Size);
 } 
 
 public class IsCanvasColorExpression : Expression
@@ -87,6 +87,6 @@ public class IsCanvasColorExpression : Expression
         Horizontal = horizontal;
         Vertical = vertical;
     }
-    public override bool Validate() => Type == IDType.IsCanvasColor;
-    public override object? Evaluate() => new IsCanvasColor(Wall, Color, Horizontal, Vertical);
+    public override bool Validate(Global Global) => Type == IDType.IsCanvasColor;
+    public override object? Evaluate(Global Global) => new IsCanvasColor(Wall, Color, Horizontal, Vertical);
 }

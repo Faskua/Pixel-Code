@@ -62,7 +62,7 @@ public class Token
         {"IsBrushColor", TokenType.IsBrushColor},
         {"IsBrushSize", TokenType.IsBrushSize},
         {"IsCanvasColor", TokenType.IsCanvasColor},
-        {"Goto", TokenType.GoTo},
+        {"GoTo", TokenType.GoTo},
     };
 }
 
