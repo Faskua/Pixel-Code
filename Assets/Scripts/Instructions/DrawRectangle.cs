@@ -73,6 +73,7 @@ public class DrawRectangle : Instruction
         }
         Wall.Row = centerRow;
         Wall.Column = centerColumn;
+        Wall.WallE.GetComponent<Transform>().position = Wall.Pixels[Wall.Row, Wall.Column].GetComponent<Transform>().position;
     }
 }
 

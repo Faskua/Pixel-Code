@@ -36,9 +36,10 @@ public enum IDType{
     Block,
 
     Spawn,      Color,
-    Size,       DrawLine,
-    DrawRectangle,      DrawCircle,
-    Fill,       
+    Size,       
+    
+    DrawLine,       Fill,
+    DrawRectangle,      DrawCircle,       
     
     GetActualX,     GetActualY,
     GetCanvasSize,      GetColorCount,

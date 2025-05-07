@@ -64,7 +64,7 @@ public class BooleanBinaryExpression : BinaryExpression
     }
     public override object Evaluate(Global Global)
     {
-        if(!Validate(Global)) Global.AddError($"An error ocured at line: {Location.Line}, column {Location.Column}");
+//        if(!Validate(Global)) Global.AddError($"An error ocured at line: {Location.Line}, column {Location.Column}");
         string operation = Operation.Value;
         if(operation == "&&" || operation == "||"){
             bool left = (bool)Left.Evaluate(Global), right = (bool)Right.Evaluate(Global);

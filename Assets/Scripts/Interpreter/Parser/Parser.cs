@@ -57,7 +57,8 @@ public class Parser
             Consume(type);
         }
     }
-    public List<Statement> Parse(List<Token> tokens){
+    public List<Statement> Parse(List<Token> tokens, Wall wall){
+        Wall = wall;
         var Statements = new List<Statement>();
         Tokens = tokens;
         pos = -1;
@@ -118,7 +119,7 @@ public class Parser
                 break;
                 
             }
-            if(currentLabel != "") LabelStatements.Add(current);
+            if(currentLabel != "" && current != null) LabelStatements.Add(current);
             if(current != null)Statements.Add(current);
             LookAhead();
         }
@@ -425,7 +426,7 @@ public class Parser
             Expression y = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new SpawnStatement(IDType.Spawn, location, (int)x.Evaluate(Global), (int)y.Evaluate(Global));
+            Statement output = new SpawnStatement(IDType.Spawn, location, (int)x.Evaluate(Global), (int)y.Evaluate(Global), Wall);
             return output;
         }
         private Statement ParseColor(){
@@ -438,7 +439,7 @@ public class Parser
             Consume(TokenType.PixelColor);
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new ColorStatement(IDType.Color, location, (string)color.Evaluate(Global));
+            Statement output = new ColorStatement(IDType.Color, location, (string)color.Evaluate(Global), Wall);
             return output;
         }
         private Statement ParseSize(){
@@ -450,7 +451,7 @@ public class Parser
             Expression size = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new SizeStatement(IDType.Size, location, (int)size.Evaluate(Global));
+            Statement output = new SizeStatement(IDType.Size, location, (int)size.Evaluate(Global), Wall);
             return output;
         }
         private Statement ParseDrawLine(){
@@ -470,7 +471,7 @@ public class Parser
             Expression distance = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new LineStatement(IDType.DrawLine, location, (int)dx.Evaluate(Global), (int)dy.Evaluate(Global), (int)distance.Evaluate(Global));
+            Statement output = new LineStatement(IDType.DrawLine, location, (int)dx.Evaluate(Global), (int)dy.Evaluate(Global), (int)distance.Evaluate(Global), Wall);
             return output;
         }
         private Statement ParseDrawCircle(){
@@ -490,7 +491,7 @@ public class Parser
             Expression radius = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new CircleStatement(IDType.DrawLine, location, (int)x.Evaluate(Global), (int)y.Evaluate(Global), (int)radius.Evaluate(Global));
+            Statement output = new CircleStatement(IDType.DrawCircle, location, (int)x.Evaluate(Global), (int)y.Evaluate(Global), (int)radius.Evaluate(Global), Wall);
             return output;
         }
         private Statement ParseDrawRectangle(){
@@ -511,14 +512,14 @@ public class Parser
             LookAhead(TokenType.Comma);
             Consume(TokenType.Comma);
             LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
-            Expression heigth = ParseNumber();
+            Expression width = ParseNumber();
             LookAhead(TokenType.Comma);
             Consume(TokenType.Comma);
             LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
-            Expression width = ParseNumber();
+            Expression height = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new RectangleStatement(IDType.DrawRectangle, location, (int)dx.Evaluate(Global), (int)dy.Evaluate(Global), (int)distance.Evaluate(Global), (int)heigth.Evaluate(Global), (int)width.Evaluate(Global));
+            Statement output = new RectangleStatement(IDType.DrawRectangle, location, (int)dx.Evaluate(Global), (int)dy.Evaluate(Global), (int)distance.Evaluate(Global), (int)width.Evaluate(Global), (int)height.Evaluate(Global), Wall);
             return output;
         }
         private Statement ParseFill(){
@@ -528,7 +529,7 @@ public class Parser
             Consume(TokenType.LParen);
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new FillStatement(IDType.Fill, location);
+            Statement output = new FillStatement(IDType.Fill, location, Wall);
             return output;
         }
 

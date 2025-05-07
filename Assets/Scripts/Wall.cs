@@ -50,6 +50,7 @@ public class Wall : MonoBehaviour
     }
     public string GetPixelColor(int row, int col) => Pixels[row,col].GetComponent<PixelUN>().Color;
     public void PaintInstruction(Instruction instruction) => instruction.Paint();
+    public void ObeyOrder(Command command) => command.Order();
     public int EvaluateFunction(Function function) => function.Evaluate();
     public bool IsPosible(int row, int col) => row >= 0 && row < Size && col >= 0 && col < Size;
 
@@ -83,12 +84,12 @@ public class Wall : MonoBehaviour
         BrushSize = 1;
     }
     void Update(){
-        if(Pixels == null) return;
-        System.Random random = new System.Random();
-        int index = random.Next(0, 9), row = random.Next(0,Size), col = random.Next(0,Size);
-        Row = row;
-        Column = col; 
-        Color = colors[index];
-        PaintPixel();
+        // if(Pixels == null) return;
+        // System.Random random = new System.Random();
+        // int index = random.Next(0, 9), row = random.Next(0,Size), col = random.Next(0,Size);
+        // Row = row;
+        // Column = col; 
+        // Color = colors[index];
+        // PaintPixel();
     }
 }

@@ -12,9 +12,11 @@ public class Fill : Instruction
     } 
     public override void Paint(){
         bool[,] mask = new bool[Wall.Pixels.GetLength(0), Wall.Pixels.GetLength(1)];
-        Paint(Wall.GetPixelColor(Row, Column), Row, Column, mask);
+        string color = Wall.GetPixelColor(Row, Column);
+        Paint(color, Row, Column, mask);
         Wall.Row = Row;
         Wall.Column = Column;
+        Wall.WallE.GetComponent<Transform>().position = Wall.Pixels[Row, Column].GetComponent<Transform>().position;
     }
     private void Paint(string color, int row, int column, bool[,] mask){
         Instruction draw = new DrawPixel(Wall, Wall.Color, row, column);
@@ -24,7 +26,9 @@ public class Fill : Instruction
         {
             int newRow = row + Drow[i], newCol = column + Dcol[i];
             if(Wall.IsPosible(newRow, newCol) && !mask[newRow,newCol]){
-                if(Wall.GetPixelColor(newRow,newCol) == color)  Paint(color, newRow, newCol, mask);
+                if(Wall.GetPixelColor(newRow,newCol) == color){
+                    Paint(color, newRow, newCol, mask);
+                }  
             }
         }
     }

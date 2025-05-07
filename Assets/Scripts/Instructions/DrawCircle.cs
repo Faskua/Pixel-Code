@@ -41,5 +41,8 @@ public class DrawCircle : Instruction
             }
             x++;
         } 
+        Wall.Row = CenterRow;
+        Wall.Column  = CenterCol;
+        Wall.WallE.GetComponent<Transform>().position = Wall.Pixels[Wall.Row, Wall.Column].GetComponent<Transform>().position;
     }
 }
