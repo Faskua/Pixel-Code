@@ -62,9 +62,6 @@ public class Parser
         var Statements = new List<Statement>();
         Tokens = tokens;
         pos = -1;
-        string currentLabel = "";
-        CodeLocation labelLocation = null;
-        var LabelStatements = new List<Statement>();
         LookAhead();
         while(pos < Tokens.Count-2){
             Statement current = null;
@@ -103,29 +100,17 @@ public class Parser
                     current = ParseFill();
                 break;
                 case TokenType.Label:
-                    if(currentLabel != ""){
-                        Statement block = new BlockStatement(IDType.Block, labelLocation, LabelStatements);
-                        Global.AddLabel(currentLabel, block);
-                    }  
-                    currentLabel = nextToken.Value;
-                    labelLocation = nextToken.Location;
-                    LabelStatements = new List<Statement>();
+                    Global.AddLabel(nextToken.Value, Statements.Count, nextToken.Location);
                     Consume(TokenType.Label);
                 break;
                 default:
-                    Debug.Log($"Error en el parse, token: {nextToken.Type}, valor: {nextToken.Value}");
                     Consume(nextToken.Type);
                     Global.AddError($"Unexpected statement at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
                 break;
                 
             }
-            if(currentLabel != "" && current != null) LabelStatements.Add(current);
             if(current != null)Statements.Add(current);
             LookAhead();
-        }
-        if(currentLabel != ""){
-            Statement block = new BlockStatement(IDType.Block, labelLocation, LabelStatements);
-            Global.AddLabel(currentLabel, block);
         }
         return Statements;
     }
@@ -140,7 +125,8 @@ public class Parser
                 Consume(TokenType.Int);
             break;
             case TokenType.Identifier:
-                left = Global.GetVariable(nextToken.Value, nextToken.Location);
+                Expression variable = new Variable(nextToken.Value, nextToken.Location);
+                left = variable;
                 Consume(TokenType.Identifier);
             break;
             default:
@@ -181,21 +167,29 @@ public class Parser
         return left;
     }
     private Expression ParseSimpleBoolean(){
-        if(nextToken.Type == TokenType.True || nextToken.Type == TokenType.False){
+        if (nextToken.Type == TokenType.True || nextToken.Type == TokenType.False)
+        {
             bool value = nextToken.Type == TokenType.True;
             Expression output = new Boolean(value, nextToken.Location);
             Consume(nextToken.Type);
             return output;
         }
-        else if(nextToken.Type == TokenType.Int) return ParseNumericalBoolean();
-        else{
-            Expression variable = Global.GetVariable(nextToken.Value, nextToken.Location);
-            if(variable.CheckType(IDType.Numeric)) return ParseNumericalBoolean();
-            else{
-                if(!variable.CheckType(IDType.Boolean)) Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
-                Consume(TokenType.Identifier);
-                return (variable as Variable).Value;
+        else if (nextToken.Type == TokenType.Int) return ParseNumericalBoolean();
+        else
+        {
+            if (nextToken.Type != TokenType.Identifier)
+            {
+                Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                return null;
             } 
+            List<TokenType> operators = new List<TokenType> { TokenType.Equal, TokenType.Less, TokenType.Greater, TokenType.LessEqual, TokenType.GreaterEqual };
+            Token op = NextTokenStay(2);
+            if (operators.Contains(op.Type)) return ParseNumericalBoolean();
+            else
+            {
+                Expression variable = new Variable(nextToken.Value, nextToken.Location);
+                return variable;
+            }
         }
     }
     private Expression ParseNumericalBoolean(){
@@ -270,15 +264,10 @@ public class Parser
                 k++;
             }
             if(variable == null){
-                if(nextToken.Type == TokenType.Identifier && NextTokenStay().Type == TokenType.EOL){
-                    variable = Global.GetVariable(nextToken.Value, NextTokenStay().Location);
-                    Consume(TokenType.Identifier);
-                } 
-                else variable = ParseNumber();
+                variable = ParseNumber();
             }
         } 
         Statement output = new Declaration(IDType.Declaration, location, name, variable);
-        output.Evaluate(Global);
         return output;
     }
     private Statement ParseGoTo(){

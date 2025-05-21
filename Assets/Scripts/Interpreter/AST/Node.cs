@@ -8,7 +8,7 @@ public abstract class ASTNode{
         Location = location;
     }
     public abstract bool Validate(Global Global);
-    public bool CheckType(IDType type) => Type == type;
+    public virtual bool CheckType(IDType type, Global Global) => Type == type;
 }
 
 

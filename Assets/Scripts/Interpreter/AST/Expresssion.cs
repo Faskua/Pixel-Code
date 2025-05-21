@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public abstract class Expression : ASTNode
 {
@@ -39,14 +40,16 @@ public class ColorExpression : Expression
 public class Variable : Expression
 {
     public string Name { get; private set; }
-    public Expression Value { get; private set; }
-    public Variable(string name, Expression value) : base(value.Type, value.Location){
+    public Variable(string name, CodeLocation location) : base(IDType.Variable, location)
+    {
         Name = name;
-        Value = value;
     }
-    public void ChangeValue(Expression node){
-        Value = node;
+    public override bool CheckType(IDType type, Global Global) => Global.GetVariable(Name, Location).CheckType(type,  Global);
+    public override bool Validate(Global Global) => Global.GetVariable(Name, Location).Validate(Global);
+    public override object Evaluate(Global Global)
+    {
+        var output = Global.GetVariable(Name,Location).Evaluate(Global);
+        Debug.Log($"la variable: {Name} da: {output}");
+        return output;
     }
-    public override bool Validate(Global Global) => Value.Validate(Global);
-    public override object Evaluate(Global Global) => Value.Evaluate(Global);
 }

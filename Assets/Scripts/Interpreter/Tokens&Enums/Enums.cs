@@ -33,7 +33,7 @@ public enum TokenType
 public enum IDType{
     Numeric,    Boolean,
     ColorPixel,     Declaration,
-    Block,
+    Block,      Variable,
 
     Spawn,      Color,
     Size,       

@@ -2,9 +2,9 @@ using System;
 
 public abstract class BinaryExpression : Expression
 {
-    public Expression Left { get; private set; }
-    public Token Operation { get; private set; }
-    public Expression Right { get; private set; }
+    public Expression Left;
+    public Token Operation;
+    public Expression Right;
 
     public BinaryExpression(Expression left, Token  op, Expression right, IDType type) : base(type, left.Location){
         Left = left;
@@ -56,9 +56,9 @@ public class BooleanBinaryExpression : BinaryExpression
     {
         string op = Operation.Value;
         bool output = true;
-        if(op == "&&" || op == "||") output = Left.CheckType(IDType.Boolean) && Right.CheckType(IDType.Boolean);
+        if(op == "&&" || op == "||") output = Left.CheckType(IDType.Boolean, Global) && Right.CheckType(IDType.Boolean, Global);
         
-        if(op == ">" || op == "<" || op == ">=" || op == "<=" || op == "==") output = Left.CheckType(IDType.Numeric) && Right.CheckType(IDType.Numeric);
+        if(op == ">" || op == "<" || op == ">=" || op == "<=" || op == "==") output = Left.CheckType(IDType.Numeric, Global) && Right.CheckType(IDType.Numeric, Global);
 
         return output && Left.Validate(Global) && Right.Validate(Global);
     }
@@ -83,6 +83,8 @@ public class BooleanBinaryExpression : BinaryExpression
                     return left > right;
                 case("<"):
                     return left < right;
+                case("=="):
+                    return left == right;
                 case(">="):
                     return left >= right;
                 default:

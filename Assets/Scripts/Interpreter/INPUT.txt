@@ -17,3 +17,40 @@
  GoTo [loop-1] (1 == 1)
 
  loop-ends-here
+
+
+
+
+
+Spawn(0,0)
+DrawLine(1,0,1)
+n <- 1
+n <- n+2
+GoTo[loop] (n == 3)
+DrawLine(1,1,1)
+loop
+
+
+
+Spawn(0,0)
+loop1
+blue <- IsBrushColor("Blue")
+DrawLine(1,1,2)
+GoTo [loop2] (blue == 1)
+Color("Blue")
+GoTo [loop1] (1 == 1)
+loop2
+
+
+
+
+
+Spawn(0,0)
+n <- 0
+loop1
+n <- n+1
+DrawLine(1,1,2)
+GoTo [loop1] (n == 1)
+
+
+

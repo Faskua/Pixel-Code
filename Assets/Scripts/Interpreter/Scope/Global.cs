@@ -6,11 +6,11 @@ public  class Global
 {
     //public static Wall Wall;
     public  Dictionary<string, Expression> Variables { get; set; }
-    public  Dictionary<string, Statement> Labels { get; set; }
+    public  Dictionary<string, int> Labels { get; set; }
     public  List<string> Errors { get; set; }
     public Global(){
         Variables = new Dictionary<string, Expression>();
-        Labels = new Dictionary<string, Statement>();
+        Labels = new Dictionary<string, int>();
         Errors = new List<string>();
     }
 
@@ -25,16 +25,16 @@ public  class Global
         } 
         return Variables[name];        
     }
-    public  Statement GetLable(string name, CodeLocation location){
+    public int GetLable(string name, CodeLocation location){
         if(!Labels.ContainsKey(name)){
             AddError($"Use of a not assigned label at line: {location.Line}, column: {location.Column}");
-            return null;
+            return -1;
         } 
         return Labels[name];        
     }
-    public  void AddLabel(string name, Statement body){
-        if(Labels.ContainsKey(name)) AddError($"Use of an already assigned label at line: {body.Location.Line}, column: {body.Location.Column}");
-        else Labels.Add(name, body);
+    public  void AddLabel(string name, int index, CodeLocation location){
+        if(Labels.ContainsKey(name)) AddError($"Use of an already assigned label at line: {location.Line}, column: {location.Column}");
+        else Labels.Add(name, index);
     }
     public  void AddError(string error){
         Errors.Add(error);
