@@ -5,20 +5,20 @@ using System.Collections.Generic;
 public  class Global
 {
     //public static Wall Wall;
-    public  Dictionary<string, Expression> Variables { get; set; }
+    public  Dictionary<string, object> Variables { get; set; }
     public  Dictionary<string, int> Labels { get; set; }
     public  List<string> Errors { get; set; }
     public Global(){
-        Variables = new Dictionary<string, Expression>();
+        Variables = new Dictionary<string, object>();
         Labels = new Dictionary<string, int>();
         Errors = new List<string>();
     }
 
-    public  void AddVariable(string name, Expression variable){
+    public  void AddVariable(string name, object variable){
         if(Variables.ContainsKey(name))     Variables[name] = variable;
         else     Variables.Add(name, variable);
     }
-    public  Expression GetVariable(string name, CodeLocation location){
+    public object GetVariable(string name, CodeLocation location){
         if(!Variables.ContainsKey(name)){
             AddError($"Use of a not assigned variable at line: {location.Line}, column: {location.Column}");
             return null;

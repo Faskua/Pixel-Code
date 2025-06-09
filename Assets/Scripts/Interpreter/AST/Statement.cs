@@ -36,7 +36,8 @@ public class Declaration : Statement
 {
     public string Name { get; private set; }
     public Expression Variable;
-    public Declaration(IDType type, CodeLocation location, string name, Expression variable) : base(type, location) {
+    public Declaration(IDType type, CodeLocation location, string name, Expression variable) : base(type, location)
+    {
         Name = name;
         Variable = variable;
     }
@@ -44,32 +45,28 @@ public class Declaration : Statement
     public override bool Validate(Global Global) => Variable.Validate(Global);
     public override void Evaluate(Global Global)
     {
-        var temp = new TemporalExpression(Variable);
-        InternalEvaluate(ref Variable, Global);
-        var number = Variable.Evaluate(Global);
-        Global.AddVariable(Name, Variable);
-        Debug.Log($"la variable n da {Global.GetVariable(Name, Variable.Location).Evaluate(Global)}");
-        Variable = temp.Value;
-        var num = Variable.Evaluate(Global);
+        // var temp = new TemporalExpression(Variable);
+        // InternalEvaluate(ref Variable, Global);
+        // var number = Variable.Evaluate(Global);
+        // Global.AddVariable(Name, Variable);
+        // Debug.Log($"la variable n da {Global.GetVariable(Name, Variable.Location).Evaluate(Global)}");
+        // Variable = temp.Value;
+        // var num = Variable.Evaluate(Global);
+        var result = Variable.Evaluate(Global);
+        Global.AddVariable(Name, result);
     }
-    private void InternalEvaluate( ref Expression expression, Global Global) {
-        if (expression is Variable)
-        {
-            if ((expression as Variable).Name == Name) expression = Global.GetVariable(Name, expression.Location);
-        }
-        else if (expression is BinaryExpression)
-        {
-            InternalEvaluate( ref (expression as BinaryExpression).Left, Global);
-            InternalEvaluate( ref (expression as BinaryExpression).Right, Global);
-        }
-    }
-}
-
-public class TemporalExpression
-{
-    private readonly Expression value;
-    public TemporalExpression(Expression value) { this.value = value; }
-    public Expression Value => value;
+    
+    // private void InternalEvaluate( ref Expression expression, Global Global) {
+    //     if (expression is Variable)
+    //     {
+    //         if ((expression as Variable).Name == Name) expression = Global.GetVariable(Name, expression.Location);
+    //     }
+    //     else if (expression is BinaryExpression)
+    //     {
+    //         InternalEvaluate( ref (expression as BinaryExpression).Left, Global);
+    //         InternalEvaluate( ref (expression as BinaryExpression).Right, Global);
+    //     }
+    // }
 }
 
 

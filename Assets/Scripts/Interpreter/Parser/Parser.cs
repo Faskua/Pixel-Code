@@ -129,6 +129,24 @@ public class Parser
                 left = variable;
                 Consume(TokenType.Identifier);
             break;
+            case TokenType.Minus:
+                Consume(TokenType.Minus);
+                LookAhead();                       
+                switch (nextToken.Type)
+                {
+                    case TokenType.Int:
+                        left = new Number(-int.Parse(nextToken.Value), nextToken.Location);
+                        Consume(TokenType.Int);
+                    break;
+                    case TokenType.Identifier:
+                        Expression v = new Variable(nextToken.Value, nextToken.Location);
+                        left = new NumericBinaryOperation(new Number(0, nextToken.Location), new Token("-", TokenType.Minus, nextToken.Location), v);
+                    break;
+                    default:
+                        Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                    break;
+                }
+            break;
             default:
                 Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
             break;
@@ -149,7 +167,8 @@ public class Parser
         }
         if(first){
             nextToken = Tokens[pos];
-        }   
+        } 
+
         return left;
     }
     private Expression ParseBoolean(){

@@ -53,6 +53,22 @@ public class Wall : MonoBehaviour
     public void ObeyOrder(Command command) => command.Order();
     public int EvaluateFunction(Function function) => function.Evaluate();
     public bool IsPosible(int row, int col) => row >= 0 && row < Size && col >= 0 && col < Size;
+    public void Restart()
+    {
+        Color = "White";
+        for (int i = 0; i < Pixels.GetLength(0); i++)
+        {
+            for (int j = 0; j < Pixels.GetLength(1); j++)
+            {
+                Row = i;
+                Column = j;
+                PaintPixel();
+            }
+        }
+        Row = 0;
+        Column = 0;
+        Color = "Black";
+    }
 
     void GenerateWall(){
         WallE.GetComponent<Transform>().position = new Vector2(-420, 0);

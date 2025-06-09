@@ -44,11 +44,11 @@ public class Variable : Expression
     {
         Name = name;
     }
-    public override bool CheckType(IDType type, Global Global) => Global.GetVariable(Name, Location).CheckType(type,  Global);
-    public override bool Validate(Global Global) => Global.GetVariable(Name, Location).Validate(Global);
+    public override bool CheckType(IDType type, Global Global) => Type == type;
+    public override bool Validate(Global Global) => true;
     public override object Evaluate(Global Global)
     {
-        var output = Global.GetVariable(Name,Location).Evaluate(Global);
+        var output = Global.GetVariable(Name,Location);
         Debug.Log($"la variable: {Name} da: {output}");
         return output;
     }
