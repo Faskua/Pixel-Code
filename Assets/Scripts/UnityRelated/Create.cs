@@ -16,25 +16,30 @@ public class Create : MonoBehaviour
         Global Global = new Global();
         Lexxer lexer = new Lexxer(Global);
         Parser parser = new Parser(Global);
-        var tokens = lexer.Tokenize(input);
-        var statements = parser.Parse(tokens, Wall);
+        if (Wall.Created)
+        {
+            var tokens = lexer.Tokenize(input);
+            var statements = parser.Parse(tokens, Wall);
 
-        if(Global.Errors.Count != 0) Debug.Log("Hay errores por arreglar");
-        else{
-            for (int index = 0; index < statements.Count; index++)
+            if (Global.Errors.Count != 0) Debug.Log("Hay errores por arreglar");
+            else
             {
-                Statement statement = statements[index];
-                Debug.Log($"Se ejecuta la statement: {statement.Type}");
-                statement.Evaluate(Global);
-                if(statement.CheckType(IDType.GoTo, Global)){
-                    if ((statement as GoTo).LabelIndex != -1)
+                for (int index = 0; index < statements.Count; index++)
+                {
+                    Statement statement = statements[index];
+                    statement.Evaluate(Global);
+                    if (statement.CheckType(IDType.GoTo, Global))
                     {
-                        index = (statement as GoTo).LabelIndex - 1;
+                        if ((statement as GoTo).LabelIndex != -1)
+                        {
+                            index = (statement as GoTo).LabelIndex - 1;
+                        }
                     }
                 }
             }
         }
-
+        else Global.AddError("You need to create the wall first!!");
+        
         foreach (var error in Global.Errors)
         {
             ErrorConsole.text += error + '\n';

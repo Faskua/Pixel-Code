@@ -119,39 +119,47 @@ public class Parser
     private Expression ParseNumber(int precedence = 0, bool first = true){
         List<TokenType> operators = new List<TokenType> {TokenType.Plus, TokenType.Minus, TokenType.Mult, TokenType.Div, TokenType.Pow};
         Expression left = null;
-        switch(nextToken.Type){
+        Debug.Log($"El nextToken es un {nextToken.Type}");
+        switch (nextToken.Type)
+        {
             case TokenType.Int:
                 left = new Number(int.Parse(nextToken.Value), nextToken.Location);
                 Consume(TokenType.Int);
-            break;
+                break;
             case TokenType.Identifier:
                 Expression variable = new Variable(nextToken.Value, nextToken.Location);
                 left = variable;
                 Consume(TokenType.Identifier);
-            break;
+                break;
             case TokenType.Minus:
                 Consume(TokenType.Minus);
-                LookAhead();                       
+                LookAhead();
+
                 switch (nextToken.Type)
                 {
                     case TokenType.Int:
-                        left = new Number(-int.Parse(nextToken.Value), nextToken.Location);
+                        Debug.Log($"Menos numero en {nextToken.Location.Line}");
+                        left = new Number(-1 * int.Parse(nextToken.Value), nextToken.Location);
                         Consume(TokenType.Int);
-                    break;
+                        break;
                     case TokenType.Identifier:
+                        Debug.Log($"menos variable en {nextToken.Location.Line}");
                         Expression v = new Variable(nextToken.Value, nextToken.Location);
                         left = new NumericBinaryOperation(new Number(0, nextToken.Location), new Token("-", TokenType.Minus, nextToken.Location), v);
-                    break;
+                        Consume(TokenType.Identifier);
+                        break;
                     default:
                         Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
-                    break;
+                        break;
                 }
-            break;
+                break;
             default:
+                Debug.Log("No entra a ninguno");
                 Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
             break;
         }
         LookAhead();
+        Debug.Log($"Siguiente token despues: {nextToken.Type}");
         int OPprecedence = 0;
         if(operators.Contains(nextToken.Type)){
             if(nextToken.Type == TokenType.Plus || nextToken.Type == TokenType.Minus) OPprecedence = 1;
@@ -162,13 +170,13 @@ public class Parser
             Token op = nextToken;
             Consume(nextToken.Type);
             LookAhead();
+            Debug.Log("Llamado recursivo");
             Expression right = ParseNumber(OPprecedence, false);
             left = new NumericBinaryOperation(left, op, right);
         }
         if(first){
             nextToken = Tokens[pos];
-        } 
-
+        }
         return left;
     }
     private Expression ParseBoolean(){
@@ -218,7 +226,7 @@ public class Parser
         LookAhead(NumericalOperators);
         Token op = nextToken;
         Consume(nextToken.Type);
-        LookAhead(new List<TokenType> {TokenType.Int, TokenType.Identifier});
+        LookAhead(new List<TokenType> {TokenType.Int, TokenType.Identifier, TokenType.Minus });
         Expression right = ParseNumber();
         Expression output = new BooleanBinaryExpression(left, op, right);
         return output;
@@ -282,9 +290,7 @@ public class Parser
                 }
                 k++;
             }
-            if(variable == null){
-                variable = ParseNumber();
-            }
+            if(variable == null) variable = ParseNumber();
         } 
         Statement output = new Declaration(IDType.Declaration, location, name, variable);
         return output;
@@ -467,15 +473,15 @@ public class Parser
             Consume(TokenType.DrawLine);
             LookAhead(TokenType.LParen);
             Consume(TokenType.LParen);
-            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int, TokenType.Minus });
             Expression dx = ParseNumber();
             LookAhead(TokenType.Comma);
             Consume(TokenType.Comma);
-            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int, TokenType.Minus  });
             Expression dy = ParseNumber();
             LookAhead(TokenType.Comma);
             Consume(TokenType.Comma);
-            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int, TokenType.Minus  });
             Expression distance = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
@@ -507,11 +513,11 @@ public class Parser
             Consume(TokenType.DrawRectangle);
             LookAhead(TokenType.LParen);
             Consume(TokenType.LParen);
-            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int, TokenType.Minus  });
             Expression dx = ParseNumber();
             LookAhead(TokenType.Comma);
             Consume(TokenType.Comma);
-            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int });
+            LookAhead(new List<TokenType> { TokenType.Identifier, TokenType.Int, TokenType.Minus  });
             Expression dy = ParseNumber();
             LookAhead(TokenType.Comma);
             Consume(TokenType.Comma);

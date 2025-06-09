@@ -40,6 +40,7 @@ public class ColorExpression : Expression
 public class Variable : Expression
 {
     public string Name { get; private set; }
+    public bool Minus { get; private set; }
     public Variable(string name, CodeLocation location) : base(IDType.Variable, location)
     {
         Name = name;
@@ -49,7 +50,6 @@ public class Variable : Expression
     public override object Evaluate(Global Global)
     {
         var output = Global.GetVariable(Name,Location);
-        Debug.Log($"la variable: {Name} da: {output}");
         return output;
     }
 }

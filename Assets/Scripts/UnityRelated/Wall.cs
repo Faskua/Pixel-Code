@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class Wall : MonoBehaviour
 {
+    public bool Created;
     public GameObject[,] Pixels;
     public GameObject Pixel;
     public GameObject WallE;
@@ -93,11 +94,13 @@ public class Wall : MonoBehaviour
                 Pixels[row,column].GetComponent<Transform>().SetParent(gameObject.GetComponent<Transform>(), false);
             }
         }
-
+        Created = true;
     }
-    void Start(){
+    void Start()
+    {
         Color = "Black";
         BrushSize = 1;
+        Created = false;
     }
     void Update(){
         // if(Pixels == null) return;

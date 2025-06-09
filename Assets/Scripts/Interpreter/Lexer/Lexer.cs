@@ -46,7 +46,7 @@ public class Lexxer
                     if(Spaces.IsMatch(Line[column].ToString())){}
                     else if(symbol.IsMatch(Line[column].ToString()) || Line[column].ToString() == "&" || Line[column].ToString() == "|" || Line[column].ToString() == "=") {AddToken(symbol.Match(Line, column).Value, line, ref column, TokenType.Unknown); }
                     else if(text.IsMatch(Line[column].ToString())){
-                        if((column + text.Match(Line, column).Length) >= Line.Length-1) AddToken(text.Match(Line, column).Value, line, ref column, TokenType.Label);
+                        if((column + text.Match(Line, column).Length) >= Line.Length-1 && column == 0) AddToken(text.Match(Line, column).Value, line, ref column, TokenType.Label);
                         else    AddToken(text.Match(Line, column).Value, line, ref column, TokenType.Unknown);
                     } 
                     else if(number.IsMatch(Line[column].ToString())) {AddToken(number.Match(Line, column).Value, line,ref column, TokenType.Int);}
