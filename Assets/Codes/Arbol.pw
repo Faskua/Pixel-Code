@@ -1,0 +1,37 @@
+Spawn(32, 60)  
+Color("Brown")  
+DrawLine(0, -1, 10)  
+
+Color("Green")  
+DrawLine(-5, -1, 5)  
+Spawn(32, 50)  
+DrawLine(5, -1, 5)  
+
+Spawn(30, 45)  
+DrawLine(-4, -1, 4)  
+Spawn(30, 45)  
+DrawLine(4, -1, 4)  
+
+Spawn(31, 40)  
+DrawLine(-3, -1, 3)  
+Spawn(31, 40)  
+DrawLine(3, -1, 3)  
+
+Color("Yellow")  
+Spawn(50, 10)  
+Fill()  
+
+Color("LightGreen")  
+Spawn(0, 63)  
+DrawLine(1, 0, 64)  
+
+Color("White")  
+Spawn(10, 5)  
+DrawLine(1, 0, 5)  
+Spawn(10, 6)  
+DrawLine(1, 0, 5)  
+
+Spawn(20, 8)  
+DrawLine(1, 0, 7)  
+Spawn(20, 9)  
+DrawLine(1, 0, 7)  

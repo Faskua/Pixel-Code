@@ -119,7 +119,6 @@ public class Parser
     private Expression ParseNumber(int precedence = 0, bool first = true){
         List<TokenType> operators = new List<TokenType> {TokenType.Plus, TokenType.Minus, TokenType.Mult, TokenType.Div, TokenType.Pow};
         Expression left = null;
-        Debug.Log($"El nextToken es un {nextToken.Type}");
         switch (nextToken.Type)
         {
             case TokenType.Int:
@@ -138,12 +137,10 @@ public class Parser
                 switch (nextToken.Type)
                 {
                     case TokenType.Int:
-                        Debug.Log($"Menos numero en {nextToken.Location.Line}");
                         left = new Number(-1 * int.Parse(nextToken.Value), nextToken.Location);
                         Consume(TokenType.Int);
                         break;
                     case TokenType.Identifier:
-                        Debug.Log($"menos variable en {nextToken.Location.Line}");
                         Expression v = new Variable(nextToken.Value, nextToken.Location);
                         left = new NumericBinaryOperation(new Number(0, nextToken.Location), new Token("-", TokenType.Minus, nextToken.Location), v);
                         Consume(TokenType.Identifier);
@@ -154,12 +151,10 @@ public class Parser
                 }
                 break;
             default:
-                Debug.Log("No entra a ninguno");
                 Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
             break;
         }
         LookAhead();
-        Debug.Log($"Siguiente token despues: {nextToken.Type}");
         int OPprecedence = 0;
         if(operators.Contains(nextToken.Type)){
             if(nextToken.Type == TokenType.Plus || nextToken.Type == TokenType.Minus) OPprecedence = 1;
@@ -170,7 +165,6 @@ public class Parser
             Token op = nextToken;
             Consume(nextToken.Type);
             LookAhead();
-            Debug.Log("Llamado recursivo");
             Expression right = ParseNumber(OPprecedence, false);
             left = new NumericBinaryOperation(left, op, right);
         }
@@ -373,7 +367,7 @@ public class Parser
             Expression y2 = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Expression output = new GetColorCountExpression(IDType.GetColorCount, location, Wall, color, (int)x1.Evaluate(Global), (int)y1.Evaluate(Global), (int)x2.Evaluate(Global), (int)y2.Evaluate(Global));
+            Expression output = new GetColorCountExpression(IDType.GetColorCount, location, Wall, color, x1, y1, x2, y2);
             return output;
         }
         private Expression ParseIsBrushColor(){
@@ -398,7 +392,7 @@ public class Parser
             Expression size = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Expression output = new IsBrushSizeExpression(IDType.IsBrushSize, location, Wall, (int)size.Evaluate(Global));
+            Expression output = new IsBrushSizeExpression(IDType.IsBrushSize, location, Wall, size);
             return output;
         }
         private Expression ParseIsCanvasColor(){
@@ -419,7 +413,7 @@ public class Parser
             Expression horizontal = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Expression output = new IsCanvasColorExpression(IDType.IsCanvasColor, location, Wall, color, (int)vertical.Evaluate(Global), (int)horizontal.Evaluate(Global));
+            Expression output = new IsCanvasColorExpression(IDType.IsCanvasColor, location, Wall, color, vertical, horizontal);
             return output;
         }
 
@@ -440,7 +434,7 @@ public class Parser
             Expression y = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new SpawnStatement(IDType.Spawn, location, (int)x.Evaluate(Global), (int)y.Evaluate(Global), Wall);
+            Statement output = new SpawnStatement(IDType.Spawn, location, x, y, Wall);
             return output;
         }
         private Statement ParseColor(){
@@ -465,7 +459,7 @@ public class Parser
             Expression size = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new SizeStatement(IDType.Size, location, (int)size.Evaluate(Global), Wall);
+            Statement output = new SizeStatement(IDType.Size, location, size, Wall);
             return output;
         }
         private Statement ParseDrawLine(){
@@ -485,7 +479,7 @@ public class Parser
             Expression distance = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new LineStatement(IDType.DrawLine, location, (int)dx.Evaluate(Global), (int)dy.Evaluate(Global), (int)distance.Evaluate(Global), Wall);
+            Statement output = new LineStatement(IDType.DrawLine, location, dx, dy, distance, Wall);
             return output;
         }
         private Statement ParseDrawCircle(){
@@ -505,7 +499,7 @@ public class Parser
             Expression radius = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new CircleStatement(IDType.DrawCircle, location, (int)x.Evaluate(Global), (int)y.Evaluate(Global), (int)radius.Evaluate(Global), Wall);
+            Statement output = new CircleStatement(IDType.DrawCircle, location, x, y, radius, Wall);
             return output;
         }
         private Statement ParseDrawRectangle(){
@@ -533,7 +527,7 @@ public class Parser
             Expression height = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
-            Statement output = new RectangleStatement(IDType.DrawRectangle, location, (int)dx.Evaluate(Global), (int)dy.Evaluate(Global), (int)distance.Evaluate(Global), (int)width.Evaluate(Global), (int)height.Evaluate(Global), Wall);
+            Statement output = new RectangleStatement(IDType.DrawRectangle, location, dx, dy, distance, width, height, Wall);
             return output;
         }
         private Statement ParseFill(){

@@ -9,10 +9,15 @@ public class Spawn : Command
         X = x;
         Y = y;
     }
-    public override void Order(){
-        Wall.Row = Y;
-        Wall.Column = X;
-        Wall.WallE.GetComponent<Transform>().position = Wall.Pixels[Wall.Row, Wall.Column].GetComponent<Transform>().position;
+    public override void Order()
+    {
+        if (X < Wall.Pixels.GetLength(1) && X >= 0 && Y < Wall.Pixels.GetLength(0) && Y >= 0)
+        {
+            Wall.Row = Y;
+            Wall.Column = X;
+            Wall.WallE.GetComponent<Transform>().position = Wall.Pixels[Wall.Row, Wall.Column].GetComponent<Transform>().position;
+        }
+        else Debug.Log($"no realiza el spawn, la x es {X} y la y es {Y}");
     }
 }
 

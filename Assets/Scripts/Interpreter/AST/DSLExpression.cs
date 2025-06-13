@@ -45,20 +45,18 @@ public class GetCanvasSizeExpression : DSLExpression
 public class GetColorCountExpression : DSLExpression
 {
     public string Color { get; private set; }
-    public int Row1 { get; private set; }
-    public int Col1 { get; private set; }
-    public int Row2 { get; private set; }
-    public int Col2 { get; private set; }
-    public GetColorCountExpression(IDType type, CodeLocation location, Wall wall, string color, int x1, int y1, int x2, int y2) : base(type, location, wall){
+    public Expression Row1 { get; private set; }
+    public Expression Col1 { get; private set; }
+    public Expression Row2 { get; private set; }
+    public Expression Col2 { get; private set; }
+    public GetColorCountExpression(IDType type, CodeLocation location, Wall wall, string color, Expression x1, Expression y1, Expression x2, Expression y2) : base(type, location, wall){
         Color = color;
-        Row1 = Math.Min(y1, y2);
-        Col1 = Math.Min(x1, x2);
-        Row2 = Math.Max(y1, y2);
-        Col2 = Math.Max(x1, x2);
     }
     public override bool Validate(Global Global) => Type == IDType.GetColorCount;
     public override object? Evaluate(Global Global){
-        Function function = new GetColorCount(Wall, Color, Col1, Row1, Col2, Row2);
+        int col1 = (int)Col1.Evaluate(Global),  col2 = (int)Col2.Evaluate(Global);
+        int row1 = (int)Row1.Evaluate(Global), row2 = (int)Row2.Evaluate(Global);
+        Function function = new GetColorCount(Wall, Color, col1, row1, col2, row2);
         return Wall.EvaluateFunction(function);
     }
 }
@@ -78,13 +76,13 @@ public class IsBrushColorExpression : DSLExpression
 
 public class IsBrushSizeExpression : DSLExpression
 {
-    public int Size { get; private set; }
-    public IsBrushSizeExpression(IDType type, CodeLocation location, Wall wall, int size) : base(type, location, wall){
+    public Expression Size { get; private set; }
+    public IsBrushSizeExpression(IDType type, CodeLocation location, Wall wall, Expression size) : base(type, location, wall){
         Size = size;
     }
     public override bool Validate(Global Global) => Type == IDType.IsBrushSize;
     public override object? Evaluate(Global Global){
-        Function function = new IsBrushSize(Wall, Size);
+        Function function = new IsBrushSize(Wall, (int)Size.Evaluate(Global));
         return Wall.EvaluateFunction(function);
     }
 } 
@@ -92,16 +90,16 @@ public class IsBrushSizeExpression : DSLExpression
 public class IsCanvasColorExpression : DSLExpression
 {
     public string Color { get; private set; }
-    public int Horizontal { get; private set; }
-    public int Vertical { get; private set; }
-    public IsCanvasColorExpression(IDType type, CodeLocation location, Wall wall, string color, int horizontal, int vertical) : base(type, location, wall){
+    public Expression Horizontal { get; private set; }
+    public Expression Vertical { get; private set; }
+    public IsCanvasColorExpression(IDType type, CodeLocation location, Wall wall, string color, Expression horizontal, Expression vertical) : base(type, location, wall){
         Color = color;
         Horizontal = horizontal;
         Vertical = vertical;
     }
     public override bool Validate(Global Global) => Type == IDType.IsCanvasColor;
     public override object? Evaluate(Global Global){
-        Function function = new IsCanvasColor(Wall, Color, Horizontal, Vertical);
+        Function function = new IsCanvasColor(Wall, Color, (int)Horizontal.Evaluate(Global), (int)Vertical.Evaluate(Global));
         return Wall.EvaluateFunction(function);
     }
 }

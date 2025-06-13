@@ -15,14 +15,17 @@ public class Wall : MonoBehaviour
     public int Row;
     public int Column;
     public int BrushSize;
-    private int Size;
+    public Queue<PaintedPixel> paintedPixels;
+    public int Size;
     private float PixelSize;
     private string[] colors = {"Red", "Blue", "Green", "Yellow", "Orange", "Purple", "Black", "White", "Transparent"};
+    
 
-    public void ChangeSize(int size){
+    public void ChangeSize(int size)
+    {
         Size = size;
         PixelSize = 1024 / size;
-        GenerateWall(); 
+        GenerateWall();
         Row = 0;
         Column = 0;
         var transform = WallE.GetComponent<RectTransform>();
@@ -43,11 +46,13 @@ public class Wall : MonoBehaviour
         {
             for (int nCol = leftCol; nCol <= rightCol; nCol++)
             {
-                if(!IsPosible(nRow, nCol)) continue;
-                Pixels[nRow,nCol].GetComponent<PixelUN>().Change(Color);
+                if (!IsPosible(nRow, nCol)) continue;
+                var p = new PaintedPixel(nRow, nCol, Color, this);
+                paintedPixels.Enqueue(p);
+                //Pixels[nRow,nCol].GetComponent<PixelUN>().Change(Color);
             }
         }
-        WallE.GetComponent<Transform>().position = Pixels[Row, Column].GetComponent<Transform>().position;
+        //WallE.GetComponent<Transform>().position = Pixels[Row, Column].GetComponent<Transform>().position;
     }
     public string GetPixelColor(int row, int col) => Pixels[row,col].GetComponent<PixelUN>().Color;
     public void PaintInstruction(Instruction instruction) => instruction.Paint();
@@ -90,8 +95,10 @@ public class Wall : MonoBehaviour
         {
             for (int column = 0; column < Size; column++)
             {
-                Pixels[row,column] = Instantiate(Pixel, new Vector2(0,0), Quaternion.identity);
-                Pixels[row,column].GetComponent<Transform>().SetParent(gameObject.GetComponent<Transform>(), false);
+                Pixels[row, column] = Instantiate(Pixel, new Vector2(0, 0), Quaternion.identity);
+                Pixels[row, column].GetComponent<Transform>().SetParent(gameObject.GetComponent<Transform>(), false);
+                Pixels[row, column].GetComponent<PixelUN>().X = column;
+                Pixels[row, column].GetComponent<PixelUN>().Y = row;
             }
         }
         Created = true;
@@ -101,14 +108,6 @@ public class Wall : MonoBehaviour
         Color = "Black";
         BrushSize = 1;
         Created = false;
-    }
-    void Update(){
-        // if(Pixels == null) return;
-        // System.Random random = new System.Random();
-        // int index = random.Next(0, 9), row = random.Next(0,Size), col = random.Next(0,Size);
-        // Row = row;
-        // Column = col; 
-        // Color = colors[index];
-        // PaintPixel();
+        paintedPixels = new Queue<PaintedPixel>();
     }
 }

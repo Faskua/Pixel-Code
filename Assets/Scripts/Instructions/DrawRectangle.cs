@@ -36,32 +36,35 @@ public class DrawRectangle : Instruction
         if(Wall.IsPosible(LeftR, LeftC)){
             Wall.Row = LeftR;
             Wall.Column = LeftC;
-            forUse = new DrawLine(Wall, 0, -1, Height / 2);
+            forUse = new DrawLine(Wall, 0, -1, (Height / 2) + 1);
             Wall.PaintInstruction(forUse);
             Wall.Row = LeftR;
             Wall.Column = LeftC;
-            forUse = new DrawLine(Wall, 0,  1, Height / 2);
+            forUse = new DrawLine(Wall, 0,  1, (Height / 2) + 1);
             Wall.PaintInstruction(forUse);
         }
         if(Wall.IsPosible(RightR, RightC)){
             Wall.Row = RightR;
             Wall.Column = RightC;
-            forUse = new DrawLine(Wall, 0, -1, Height / 2);
+            forUse = new DrawLine(Wall, 0, -1, (Height / 2) + 1);
             Wall.PaintInstruction(forUse);
             Wall.Row = RightR;
             Wall.Column = RightC;
-            forUse = new DrawLine(Wall, 0,  1, Height / 2);
+            forUse = new DrawLine(Wall, 0,  1, (Height / 2) + 1);
             Wall.PaintInstruction(forUse);
-        }if(Wall.IsPosible(UpR, UpC)){
+        }
+        if (Wall.IsPosible(UpR, UpC))
+        {
             Wall.Row = UpR;
             Wall.Column = UpC;
-            forUse = new DrawLine(Wall, -1, 0, (Width / 2) + 1 );
+            forUse = new DrawLine(Wall, -1, 0, (Width / 2) + 1);
             Wall.PaintInstruction(forUse);
             Wall.Row = UpR;
             Wall.Column = UpC;
-            forUse = new DrawLine(Wall, 1,  0, (Width / 2) + 1 );
+            forUse = new DrawLine(Wall, 1, 0, (Width / 2) + 1);
             Wall.PaintInstruction(forUse);
-        }if(Wall.IsPosible(DownR, DownC)){
+        }
+        if(Wall.IsPosible(DownR, DownC)){
             Wall.Row = DownR;
             Wall.Column = DownC;
             forUse = new DrawLine(Wall, -1, 0, (Width / 2) + 1 );

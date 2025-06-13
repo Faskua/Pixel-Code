@@ -13,7 +13,7 @@ public class Lexxer
     Regex symbol = new Regex(@"(&&|\|\||<-|<=|>=|==|\*\*|[+\-*/%<>,()\[\]])");
     Regex Spaces = new Regex(@"[\s\t]+");
     Regex Invalid = new Regex(@"[;:\\}{]");  
-    private string[] Colors = {"Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Black", "White", "Transparent"};
+    private string[] Colors = {"Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Black", "White", "Gray", "Pink", "LightBlue", "LightGreen", "LightGray", "Brown", "Transparent"};
     public Lexxer(Global global){
         Global = global;
     }

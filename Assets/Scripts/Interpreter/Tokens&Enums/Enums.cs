@@ -46,11 +46,3 @@ public enum IDType{
     IsBrushColor,       IsBrushSize,
     IsCanvasColor,      GoTo
 }
-
-public enum PixelColor{
-    Red,    Blue,
-    Green,  Yellow,
-    Orange, Purple,
-    Black,  White,
-    Transparent
-}
