@@ -9,6 +9,7 @@ Transforma líneas de código en pixelart con un lenguaje diseñado específicam
 ---
 
 ## 🖥 Capturas  
+![Pixel-Code 14_06_2025 13_39_50](https://github.com/user-attachments/assets/568a5ce4-abb3-4ea9-ad60-69dc13b55fd9)
 
 
 Ejemplo de un canvas 64x64 y panel de código, ademas de la interfaz para ejecutarlo.  
