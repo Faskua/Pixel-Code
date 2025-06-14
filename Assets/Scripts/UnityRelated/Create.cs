@@ -23,51 +23,50 @@ public class Create : MonoBehaviour
             var tokens = lexer.Tokenize(input);
             var statements = parser.Parse(tokens, Wall);
 
-            if (Global.Errors.Count != 0) Debug.Log("Hay errores por arreglar");
-            else
+            
+            for (int index = 0; index < statements.Count; index++)
             {
-                for (int index = 0; index < statements.Count; index++)
+                if (Global.Errors.Count != 0) break;
+                Statement statement = statements[index];
+                statement.Evaluate(Global);
+                if (statement.CheckType(IDType.GoTo, Global))
                 {
-                    Statement statement = statements[index];
-                    statement.Evaluate(Global);
-                    if (statement.CheckType(IDType.GoTo, Global))
+                    if ((statement as GoTo).LabelIndex != -1)
                     {
-                        if ((statement as GoTo).LabelIndex != -1)
-                        {
-                            index = (statement as GoTo).LabelIndex - 1;
-                        }
-                    }
-                    switch (Wall.Size)
-                    {
-                        case 4:
-                            v = 150;
-                            break;
-                        case 8:
-                            v = 100;
-                            break;
-                        case 16:
-                            v = 40;
-                            break;
-                        case 32:
-                            v = 30;
-                            break;
-                        case 64:
-                            v = 10;
-                            break;
-                        case 128:
-                            v = 5;
-                            break;
-                        default: //256
-                            v = 1;
-                        break;
-                    }
-                    while (Wall.paintedPixels.Count > 0)
-                    {
-                        Wall.paintedPixels.Dequeue().Paint();
-                        await Task.Delay(v);
+                        index = (statement as GoTo).LabelIndex - 1;
                     }
                 }
+                switch (Wall.Size)
+                {
+                    case 4:
+                        v = 150;
+                        break;
+                    case 8:
+                        v = 100;
+                        break;
+                    case 16:
+                        v = 40;
+                        break;
+                    case 32:
+                        v = 30;
+                        break;
+                    case 64:
+                        v = 10;
+                        break;
+                    case 128:
+                        v = 5;
+                        break;
+                    default: //256
+                        v = 1;
+                    break;
+                }
+                while (Wall.paintedPixels.Count > 0)
+                {
+                    Wall.paintedPixels.Dequeue().Paint();
+                    await Task.Delay(v);
+                }
             }
+            
         }
         else Global.AddError("You need to create the wall first!!");
         

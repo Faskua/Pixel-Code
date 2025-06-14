@@ -14,6 +14,7 @@ public class Lexxer
     Regex Spaces = new Regex(@"[\s\t]+");
     Regex Invalid = new Regex(@"[;:\\}{]");  
     private string[] Colors = {"Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Black", "White", "Gray", "Pink", "LightBlue", "LightGreen", "LightGray", "Brown", "Transparent"};
+    private List<int> Lines = new List<int>();
     public Lexxer(Global global){
         Global = global;
     }
@@ -34,7 +35,11 @@ public class Lexxer
                     Marks = !Marks;
                     lastMark = (line+1, column+1);
                     if(!Marks){
-                        if(!Colors.Contains(Token))  Global.AddError($"Unvalid color at: {lastMark.line}, column: {lastMark.column}");
+                        if (!Colors.Contains(Token) && !Lines.Contains(line))
+                        {
+                            Global.AddError($"Unvalid color at: {lastMark.line}, column: {lastMark.column}");
+                            Lines.Add(line);
+                        }  
                         tokens.Add(new Token(Token, TokenType.PixelColor, new CodeLocation(line+1, column)));
                         Token = "";
                     }
@@ -43,14 +48,19 @@ public class Lexxer
                     Token += Line[column];
                 }
                 else{
-                    if(Spaces.IsMatch(Line[column].ToString())){}
-                    else if(symbol.IsMatch(Line[column].ToString()) || Line[column].ToString() == "&" || Line[column].ToString() == "|" || Line[column].ToString() == "=") {AddToken(symbol.Match(Line, column).Value, line, ref column, TokenType.Unknown); }
-                    else if(text.IsMatch(Line[column].ToString())){
-                        if((column + text.Match(Line, column).Length) >= Line.Length-1 && column == 0) AddToken(text.Match(Line, column).Value, line, ref column, TokenType.Label);
-                        else    AddToken(text.Match(Line, column).Value, line, ref column, TokenType.Unknown);
+                    if (Spaces.IsMatch(Line[column].ToString())) { }
+                    else if (symbol.IsMatch(Line[column].ToString()) || Line[column].ToString() == "&" || Line[column].ToString() == "|" || Line[column].ToString() == "=") { AddToken(symbol.Match(Line, column).Value, line, ref column, TokenType.Unknown); }
+                    else if (text.IsMatch(Line[column].ToString()))
+                    {
+                        if ((column + text.Match(Line, column).Length) >= Line.Length - 1 && column == 0) AddToken(text.Match(Line, column).Value, line, ref column, TokenType.Label);
+                        else AddToken(text.Match(Line, column).Value, line, ref column, TokenType.Unknown);
+                    }
+                    else if (number.IsMatch(Line[column].ToString())) { AddToken(number.Match(Line, column).Value, line, ref column, TokenType.Int); }
+                    else if (Invalid.IsMatch(Line[column].ToString()) && !Lines.Contains(line))
+                    {
+                        Lines.Add(line);
+                        Global.AddError($"Invalid character: {Invalid.Match(Line, column).Value}, at line: {lastMark.line}, column: {lastMark.column}");
                     } 
-                    else if(number.IsMatch(Line[column].ToString())) {AddToken(number.Match(Line, column).Value, line,ref column, TokenType.Int);}
-                    else if(Invalid.IsMatch(Line[column].ToString())) Global.AddError($"Invalid character: {Invalid.Match(Line, column).Value}, at line: {lastMark.line}, column: {lastMark.column}");
                     
                 }
                 column++;

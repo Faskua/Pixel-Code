@@ -20,8 +20,13 @@ public class SpawnStatement : DSLStatement
     }
     public override bool Validate(Global Global) => Type == IDType.Spawn;
     public override void Evaluate(Global Global){
-        Command command = new Spawn(Wall, (int)X.Evaluate(Global), (int)Y.Evaluate(Global));
-        Wall.ObeyOrder(command);
+        int x = (int)X.Evaluate(Global), y = (int)Y.Evaluate(Global);
+        if (x >= Wall.Pixels.GetLength(0) || x < 0 || y >= Wall.Pixels.GetLength(0) || y < 0) Global.AddError($"OutofCanvasException at line: {Location.Line}, column: {Location.Column}");
+        else
+        {
+            Command command = new Spawn(Wall, x, y);
+            Wall.ObeyOrder(command);
+        }
     }
 }
 
@@ -46,8 +51,13 @@ public class SizeStatement : DSLStatement
     }
     public override bool Validate(Global Global) => Type == IDType.Size;
     public override void Evaluate(Global Global){
-        Command command = new Size(Wall, (int)Size.Evaluate(Global));
-        Wall.ObeyOrder(command);
+        int s = (int)Size.Evaluate(Global);
+        if (s < 1) Global.AddError($"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
+        else
+        {
+            Command command = new Size(Wall, s);
+            Wall.ObeyOrder(command);            
+        }
     }
 }
 
@@ -63,8 +73,13 @@ public class LineStatement : DSLStatement
     }
     public override bool Validate(Global Global) => Type == IDType.DrawLine;
     public override void Evaluate(Global Global){
-        Instruction instruction = new DrawLine(Wall, (int)DX.Evaluate(Global), (int)DY.Evaluate(Global), (int)Distance.Evaluate(Global));
-        Wall.PaintInstruction(instruction);
+        int d = (int)Distance.Evaluate(Global);
+        if (d < 1) Global.AddError($"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
+        else
+        {
+            Instruction instruction = new DrawLine(Wall, (int)DX.Evaluate(Global), (int)DY.Evaluate(Global), d);
+            Wall.PaintInstruction(instruction);            
+        }
     }
 }
 
@@ -80,8 +95,13 @@ public class CircleStatement : DSLStatement
     }
     public override bool Validate(Global Global) => Type == IDType.DrawCircle;
     public override void Evaluate(Global Global){
-        Instruction instruction = new DrawCircle(Wall, (int)X.Evaluate(Global), (int)Y.Evaluate(Global), (int)Radius.Evaluate(Global));
-        Wall.PaintInstruction(instruction);
+        int x = (int)X.Evaluate(Global), y = (int)Y.Evaluate(Global), r = (int)Radius.Evaluate(Global);
+        if (r < 1 || x < 0 || x >= Wall.Pixels.GetLength(0) || y < 0 || y >= Wall.Pixels.GetLength(0)) Global.AddError($"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
+        else
+        {
+            Instruction instruction = new DrawCircle(Wall, x, y, r);
+            Wall.PaintInstruction(instruction);            
+        }
     }
 }
 
@@ -101,8 +121,13 @@ public class RectangleStatement : DSLStatement
     }
     public override bool Validate(Global Global) => Type == IDType.DrawRectangle;
     public override void Evaluate(Global Global){
-        Instruction instruction = new DrawRectangle(Wall, (int)DX.Evaluate(Global), (int)DY.Evaluate(Global), (int)Distance.Evaluate(Global), (int)Width.Evaluate(Global), (int)Height.Evaluate(Global));
-        Wall.PaintInstruction(instruction);
+        int d = (int)Distance.Evaluate(Global), h = (int)Height.Evaluate(Global), w = (int)Width.Evaluate(Global);
+        if (d < 0 || h < 0 || w < 0) Global.AddError($"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
+        else
+        {
+            Instruction instruction = new DrawRectangle(Wall, (int)DX.Evaluate(Global), (int)DY.Evaluate(Global), d, w, h);
+            Wall.PaintInstruction(instruction);
+        }
     }
 }
 

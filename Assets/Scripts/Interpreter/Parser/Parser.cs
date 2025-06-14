@@ -6,10 +6,12 @@ public class Parser
 {
     public Global Global { get; private set; }
     private List<Token> Tokens { get; set;}
+    private List<int> Lines { get; set; }
     private int pos { get; set; }
     private Token nextToken { get; set; }
     private Wall Wall { get; set; }
-    public Parser(Global global){
+    public Parser(Global global)
+    {
         Global = global;
     }
 
@@ -28,11 +30,16 @@ public class Parser
             Global.AddError($"Unexpected end of file");
             return;
         }
-        if(types == null) nextToken = Tokens[pos+1] ;
-        else if(types.Contains(Tokens[pos+1].Type)) nextToken = Tokens[pos+1];
-        else{
-            Token token = Tokens[pos+1];
-            Global.AddError($"UnexpectedToken at line: {token.Location.Line}, columnm: { token.Location.Column}");
+        if (types == null) nextToken = Tokens[pos + 1];
+        else if (types.Contains(Tokens[pos + 1].Type)) nextToken = Tokens[pos + 1];
+        else
+        {
+            Token token = Tokens[pos + 1];
+            if (!Lines.Contains(token.Location.Line))
+            {
+                Lines.Add(token.Location.Line);
+                Global.AddError($"Unexpected Token at line: {token.Location.Line}, column: {token.Location.Column}");
+            }
         } 
     }
     private void LookAhead(TokenType type){
@@ -48,7 +55,11 @@ public class Parser
         if(Tokens[pos+1].Type == type) pos++;
         else{
             Token token = Tokens[pos+1];
-            Global.AddError($"Unexpected token at line: {token.Location.Line}, column: {token.Location.Column}");
+            if (!Lines.Contains(token.Location.Line))
+            {
+                Lines.Add(token.Location.Line);
+                Global.AddError($"Unexpected Token at line: {token.Location.Line}, column: {token.Location.Column}");
+            }
         }
     }
     private void Consume(List<TokenType> types){
@@ -60,6 +71,7 @@ public class Parser
     public List<Statement> Parse(List<Token> tokens, Wall wall){
         Wall = wall;
         var Statements = new List<Statement>();
+        Lines = new List<int>();
         Tokens = tokens;
         pos = -1;
         LookAhead();
@@ -105,7 +117,11 @@ public class Parser
                 break;
                 default:
                     Consume(nextToken.Type);
-                    Global.AddError($"Unexpected statement at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                    if (!Lines.Contains(nextToken.Location.Line))
+                    {
+                        Lines.Add(nextToken.Location.Line);
+                        Global.AddError($"Unexpected statement at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                    }
                 break;
                 
             }
@@ -146,12 +162,20 @@ public class Parser
                         Consume(TokenType.Identifier);
                         break;
                     default:
-                        Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                        if (!Lines.Contains(nextToken.Location.Line))
+                        {
+                            Lines.Add(nextToken.Location.Line);
+                            Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                        }
                         break;
                 }
                 break;
             default:
-                Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                if (!Lines.Contains(nextToken.Location.Line))
+                {
+                    Lines.Add(nextToken.Location.Line);
+                    Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                }
             break;
         }
         LookAhead();
@@ -200,7 +224,11 @@ public class Parser
         {
             if (nextToken.Type != TokenType.Identifier)
             {
-                Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                if (!Lines.Contains(nextToken.Location.Line))
+                {
+                    Lines.Add(nextToken.Location.Line);
+                    Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                }
                 return null;
             } 
             List<TokenType> operators = new List<TokenType> { TokenType.Equal, TokenType.Less, TokenType.Greater, TokenType.LessEqual, TokenType.GreaterEqual };

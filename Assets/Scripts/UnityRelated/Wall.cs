@@ -49,10 +49,8 @@ public class Wall : MonoBehaviour
                 if (!IsPosible(nRow, nCol)) continue;
                 var p = new PaintedPixel(nRow, nCol, Color, this);
                 paintedPixels.Enqueue(p);
-                //Pixels[nRow,nCol].GetComponent<PixelUN>().Change(Color);
             }
         }
-        //WallE.GetComponent<Transform>().position = Pixels[Row, Column].GetComponent<Transform>().position;
     }
     public string GetPixelColor(int row, int col) => Pixels[row,col].GetComponent<PixelUN>().Color;
     public void PaintInstruction(Instruction instruction) => instruction.Paint();
