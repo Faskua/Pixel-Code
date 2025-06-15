@@ -77,44 +77,46 @@ public class Parser
         LookAhead();
         while(pos < Tokens.Count-2){
             Statement current = null;
-            switch(nextToken.Type){
+            Debug.Log($"Viene un {nextToken.Type}");
+            switch (nextToken.Type)
+            {
                 case TokenType.EOL:
                     Consume(TokenType.EOL);
-                break;
+                    break;
                 case TokenType.EOF:
                     Consume(TokenType.EOF);
-                break;
+                    break;
                 case TokenType.GoTo:
                     current = ParseGoTo();
-                break;
+                    break;
                 case TokenType.Identifier:
                     current = ParseVariable();
-                break;
+                    break;
                 case TokenType.Spawn:
                     current = ParseSpawn();
-                break;
+                    break;
                 case TokenType.Color:
                     current = ParseColor();
-                break;
+                    break;
                 case TokenType.Size:
                     current = ParseSize();
-                break;
+                    break;
                 case TokenType.DrawLine:
                     current = ParseDrawLine();
-                break;
+                    break;
                 case TokenType.DrawCircle:
                     current = ParseDrawCircle();
-                break;
+                    break;
                 case TokenType.DrawRectangle:
                     current = ParseDrawRectangle();
-                break;
+                    break;
                 case TokenType.Fill:
                     current = ParseFill();
-                break;
+                    break;
                 case TokenType.Label:
                     Global.AddLabel(nextToken.Value, Statements.Count, nextToken.Location);
                     Consume(TokenType.Label);
-                break;
+                    break;
                 default:
                     Consume(nextToken.Type);
                     if (!Lines.Contains(nextToken.Location.Line))
@@ -122,8 +124,8 @@ public class Parser
                         Lines.Add(nextToken.Location.Line);
                         Global.AddError($"Unexpected statement at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
                     }
-                break;
-                
+                    break;
+
             }
             if(current != null)Statements.Add(current);
             LookAhead();
@@ -133,7 +135,7 @@ public class Parser
 
     #region ParseExpressions
     private Expression ParseNumber(int precedence = 0, bool first = true){
-        List<TokenType> operators = new List<TokenType> {TokenType.Plus, TokenType.Minus, TokenType.Mult, TokenType.Div, TokenType.Pow};
+        List<TokenType> operators = new List<TokenType> {TokenType.Plus, TokenType.Minus, TokenType.Mult, TokenType.Div, TokenType.Mod, TokenType.Pow};
         Expression left = null;
         switch (nextToken.Type)
         {
@@ -180,11 +182,7 @@ public class Parser
         }
         LookAhead();
         int OPprecedence = 0;
-        if(operators.Contains(nextToken.Type)){
-            if(nextToken.Type == TokenType.Plus || nextToken.Type == TokenType.Minus) OPprecedence = 1;
-            else if(nextToken.Type == TokenType.Mult || nextToken.Type == TokenType.Div) OPprecedence = 2;
-            else OPprecedence = 3;
-        }
+        if (operators.Contains(nextToken.Type)) OPprecedence = GetPrecedence(nextToken.Type);
         while(precedence < OPprecedence && operators.Contains(nextToken.Type)){
             Token op = nextToken;
             Consume(nextToken.Type);
@@ -197,10 +195,33 @@ public class Parser
         }
         return left;
     }
-    private Expression ParseBoolean(){
+
+    private int GetPrecedence(TokenType? op)
+    {
+        if (op == null) return 0;
+        switch (op)
+        {
+            case TokenType.Plus:
+            case TokenType.Minus:
+                return 1;
+            case TokenType.Mult:
+            case TokenType.Div:
+            case TokenType.Mod:
+                return 2;
+            case TokenType.Pow:
+                return 3;
+            default:
+                return 0;
+        }
+    }
+
+
+    private Expression ParseBoolean()
+    {
         Expression left = ParseSimpleBoolean();
         LookAhead();
-        while(nextToken.Type == TokenType.And || nextToken.Type == TokenType.Or){
+        while (nextToken.Type == TokenType.And || nextToken.Type == TokenType.Or)
+        {
             Token op = nextToken;
             Consume(nextToken.Type);
             LookAhead();
@@ -269,50 +290,55 @@ public class Parser
         Consume(TokenType.Assignation);
         Expression variable = null;
         LookAhead();
-        if(DSLExpressions.Contains(nextToken.Type)){
-            switch(nextToken.Type){
+        if (DSLExpressions.Contains(nextToken.Type))
+        {
+            switch (nextToken.Type)
+            {
                 case TokenType.GetActualX:
                     variable = ParseGetActualX();
                     variable.Type = IDType.Numeric;
-                break;
+                    break;
                 case TokenType.GetActualY:
                     variable = ParseGetActualY();
                     variable.Type = IDType.Numeric;
-                break;
+                    break;
                 case TokenType.GetCanvasSize:
                     variable = ParseGetCanvasSize();
                     variable.Type = IDType.Numeric;
-                break;
+                    break;
                 case TokenType.GetColorCount:
                     variable = ParseGetColorCount();
                     variable.Type = IDType.Numeric;
-                break;
+                    break;
                 case TokenType.IsBrushColor:
                     variable = ParseIsBrushColor();
                     variable.Type = IDType.Numeric;
-                break;
+                    break;
                 case TokenType.IsBrushSize:
                     variable = ParseIsBrushSize();
                     variable.Type = IDType.Numeric;
-                break;
+                    break;
                 case TokenType.IsCanvasColor:
                     variable = ParseIsCanvasColor();
                     variable.Type = IDType.Numeric;
-                break;
+                    break;
                 default:
-                break;
+                    break;
             }
         }
-        else{
+        else
+        {
             int k = 0;
-            while(NextTokenStay(k).Type != TokenType.EOL){
-                if(BooleanOperators.Contains(NextTokenStay(k).Type)){
+            while (NextTokenStay(k).Type != TokenType.EOL)
+            {
+                if (BooleanOperators.Contains(NextTokenStay(k).Type))
+                {
                     variable = ParseBoolean();
                     break;
                 }
                 k++;
             }
-            if(variable == null) variable = ParseNumber();
+            if (variable == null) variable = ParseNumber();
         } 
         Statement output = new Declaration(IDType.Declaration, location, name, variable);
         return output;
@@ -395,6 +421,7 @@ public class Parser
             Expression y2 = ParseNumber();
             LookAhead(TokenType.RParen);
             Consume(TokenType.RParen);
+            Debug.Log("PArseado el getcolorcount");
             Expression output = new GetColorCountExpression(IDType.GetColorCount, location, Wall, color, x1, y1, x2, y2);
             return output;
         }

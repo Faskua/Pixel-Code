@@ -50,6 +50,10 @@ public class GetColorCountExpression : DSLExpression
     public Expression Row2 { get; private set; }
     public Expression Col2 { get; private set; }
     public GetColorCountExpression(IDType type, CodeLocation location, Wall wall, string color, Expression x1, Expression y1, Expression x2, Expression y2) : base(type, location, wall){
+        Col1 = x1;
+        Col2 = x2;
+        Row1 = y1;
+        Row2 = y2;
         Color = color;
     }
     public override bool Validate(Global Global) => Type == IDType.GetColorCount;

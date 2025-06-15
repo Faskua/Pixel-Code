@@ -12,6 +12,7 @@ public class Create : MonoBehaviour
     public Wall Wall;
 
     public async void OnClick(){
+        Debug.Log("pp");
         string input = Input.text;
         ErrorConsole.text = "";
         Global Global = new Global();

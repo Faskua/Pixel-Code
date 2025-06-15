@@ -39,8 +39,9 @@ public class Lexxer
                         {
                             Global.AddError($"Unvalid color at: {lastMark.line}, column: {lastMark.column}");
                             Lines.Add(line);
-                        }  
-                        tokens.Add(new Token(Token, TokenType.PixelColor, new CodeLocation(line+1, column)));
+                            tokens.Add(new Token("Black", TokenType.PixelColor, new CodeLocation(line+1, column)));
+                        }
+                        else tokens.Add(new Token(Token, TokenType.PixelColor, new CodeLocation(line+1, column)));
                         Token = "";
                     }
                 }

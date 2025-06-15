@@ -40,7 +40,7 @@ public class NumericBinaryOperation : BinaryExpression
                 if(right== 0) Global.AddError($"Attempt to divide by zero at line: {Right.Location.Line}, column: {Right.Location.Column}"); //esto hay que cambiarlo para guardar los errores
                 return left / right;
             case("**"):
-                return Math.Pow(left, right);
+                return Convert.ToInt32(Math.Pow(left, right));
             case("%"):
                 return left % right;
             default:
