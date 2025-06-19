@@ -25,7 +25,7 @@ public class NumericBinaryOperation : BinaryExpression
 
     public override object Evaluate(Global Global)
     {
-        if(!Validate(Global)) Global.AddError($"An error ocured at line: {Location.Line}, column: {Location.Column}");
+        if(!Validate(Global)) Global.AddError(Location.Line, $"An error ocured at line: {Location.Line}, column: {Location.Column}");
         int left = (int)Left.Evaluate(Global);
         int right = (int)Right.Evaluate(Global);
         switch (Operation.Value)
@@ -37,7 +37,7 @@ public class NumericBinaryOperation : BinaryExpression
             case("*"):
                 return left * right;
             case("/"):
-                if(right== 0) Global.AddError($"Attempt to divide by zero at line: {Right.Location.Line}, column: {Right.Location.Column}"); //esto hay que cambiarlo para guardar los errores
+                if(right== 0) Global.AddError(Right.Location.Line, $"Attempt to divide by zero at line: {Right.Location.Line}, column: {Right.Location.Column}"); //esto hay que cambiarlo para guardar los errores
                 return left / right;
             case("**"):
                 return Convert.ToInt32(Math.Pow(left, right));

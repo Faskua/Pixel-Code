@@ -27,7 +27,7 @@ public class Parser
     }
     private void LookAhead(List<TokenType>? types = null){
         if(!CanGo()){
-            Global.AddError($"Unexpected end of file");
+            Global.AddError(nextToken.Location.Line, $"Unexpected end of file");
             return;
         }
         if (types == null) nextToken = Tokens[pos + 1];
@@ -38,7 +38,7 @@ public class Parser
             if (!Lines.Contains(token.Location.Line))
             {
                 Lines.Add(token.Location.Line);
-                Global.AddError($"Unexpected Token at line: {token.Location.Line}, column: {token.Location.Column}");
+                Global.AddError(token.Location.Line, $"Unexpected Token at line: {token.Location.Line}, column: {token.Location.Column}");
             }
         } 
     }
@@ -49,7 +49,7 @@ public class Parser
     }
     private void Consume(TokenType type){
         if(!CanGo()){
-            Global.AddError($"Unexpected end of file");
+            Global.AddError(Tokens[pos+1].Location.Line, $"Unexpected end of file");
             return;
         }
         if(Tokens[pos+1].Type == type) pos++;
@@ -58,7 +58,7 @@ public class Parser
             if (!Lines.Contains(token.Location.Line))
             {
                 Lines.Add(token.Location.Line);
-                Global.AddError($"Unexpected Token at line: {token.Location.Line}, column: {token.Location.Column}");
+                Global.AddError(token.Location.Line, $"Unexpected Token at line: {token.Location.Line}, column: {token.Location.Column}");
             }
         }
     }
@@ -122,7 +122,7 @@ public class Parser
                     if (!Lines.Contains(nextToken.Location.Line))
                     {
                         Lines.Add(nextToken.Location.Line);
-                        Global.AddError($"Unexpected statement at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                        Global.AddError(nextToken.Location.Line, $"Unexpected statement at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
                     }
                     break;
 
@@ -167,7 +167,7 @@ public class Parser
                         if (!Lines.Contains(nextToken.Location.Line))
                         {
                             Lines.Add(nextToken.Location.Line);
-                            Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                            Global.AddError(nextToken.Location.Line, $"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
                         }
                         break;
                 }
@@ -176,7 +176,7 @@ public class Parser
                 if (!Lines.Contains(nextToken.Location.Line))
                 {
                     Lines.Add(nextToken.Location.Line);
-                    Global.AddError($"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                    Global.AddError(nextToken.Location.Line, $"Unexpected token at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
                 }
             break;
         }
@@ -248,7 +248,7 @@ public class Parser
                 if (!Lines.Contains(nextToken.Location.Line))
                 {
                     Lines.Add(nextToken.Location.Line);
-                    Global.AddError($"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
+                    Global.AddError(nextToken.Location.Line, $"Unvalid boolean expression at line: {nextToken.Location.Line}, column: {nextToken.Location.Column}");
                 }
                 return null;
             } 

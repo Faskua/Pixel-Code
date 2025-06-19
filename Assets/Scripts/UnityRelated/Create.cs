@@ -11,8 +11,8 @@ public class Create : MonoBehaviour
     public Text ErrorConsole;
     public Wall Wall;
 
-    public async void OnClick(){
-        Debug.Log("pp");
+    public async void OnClick()
+    {
         string input = Input.text;
         ErrorConsole.text = "";
         Global Global = new Global();
@@ -24,7 +24,7 @@ public class Create : MonoBehaviour
             var tokens = lexer.Tokenize(input);
             var statements = parser.Parse(tokens, Wall);
 
-            
+
             for (int index = 0; index < statements.Count; index++)
             {
                 if (Global.Errors.Count != 0) break;
@@ -59,7 +59,7 @@ public class Create : MonoBehaviour
                         break;
                     default: //256
                         v = 1;
-                    break;
+                        break;
                 }
                 while (Wall.paintedPixels.Count > 0)
                 {
@@ -67,34 +67,16 @@ public class Create : MonoBehaviour
                     await Task.Delay(v);
                 }
             }
-            
+
         }
-        else Global.AddError("You need to create the wall first!!");
-        
+        else Global.AddError(0, "You need to create the wall first!!");
+
         foreach (var error in Global.Errors)
         {
             ErrorConsole.text += error + '\n';
         }
     }
 
-    void PaintPixels()
-    {
-        if (Wall.paintedPixels.Count > 0)
-        {
-            var p = Wall.paintedPixels.Dequeue();
-            p.Paint();
-        }
-        else CancelInvoke("PaintPixels");
-    }
-
-    IEnumerator PaintCoroutine()
-    {
-        while (Wall.paintedPixels.Count > 0)
-        {
-            Wall.paintedPixels.Dequeue().Paint();
-            yield return new WaitForSeconds(0.1f);
-        }
-    }
 
     void Start(){
         Wall = GameObject.FindGameObjectWithTag("WALL").GetComponent<Wall>();

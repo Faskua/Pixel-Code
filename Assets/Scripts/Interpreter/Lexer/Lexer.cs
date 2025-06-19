@@ -37,7 +37,7 @@ public class Lexxer
                     if(!Marks){
                         if (!Colors.Contains(Token) && !Lines.Contains(line))
                         {
-                            Global.AddError($"Unvalid color at: {lastMark.line}, column: {lastMark.column}");
+                            Global.AddError(lastMark.line, $"Unvalid color at: {lastMark.line}, column: {lastMark.column}");
                             Lines.Add(line);
                             tokens.Add(new Token("Black", TokenType.PixelColor, new CodeLocation(line+1, column)));
                         }
@@ -60,7 +60,7 @@ public class Lexxer
                     else if (Invalid.IsMatch(Line[column].ToString()) && !Lines.Contains(line))
                     {
                         Lines.Add(line);
-                        Global.AddError($"Invalid character: {Invalid.Match(Line, column).Value}, at line: {lastMark.line}, column: {lastMark.column}");
+                        Global.AddError(line, $"Invalid character: {Invalid.Match(Line, column).Value}, at line: {lastMark.line}, column: {lastMark.column}");
                     } 
                     
                 }
@@ -70,7 +70,7 @@ public class Lexxer
             line ++;
             column = 0;
         }
-        if(Marks) Global.AddError($"Missing clousing quote mark at line: {lastMark.line}, column: {lastMark.column}");
+        if(Marks) Global.AddError(lastMark.line, $"Missing clousing quote mark at line: {lastMark.line}, column: {lastMark.column}");
         tokens.Add(new Token("", TokenType.EOF, new CodeLocation(Splited.Length+1, 1)));
         return tokens;
     }

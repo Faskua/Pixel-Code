@@ -21,7 +21,7 @@ public class SpawnStatement : DSLStatement
     public override bool Validate(Global Global) => Type == IDType.Spawn;
     public override void Evaluate(Global Global){
         int x = (int)X.Evaluate(Global), y = (int)Y.Evaluate(Global);
-        if (x >= Wall.Pixels.GetLength(0) || x < 0 || y >= Wall.Pixels.GetLength(0) || y < 0) Global.AddError($"OutofCanvasException at line: {Location.Line}, column: {Location.Column}");
+        if (x >= Wall.Pixels.GetLength(0) || x < 0 || y >= Wall.Pixels.GetLength(0) || y < 0) Global.AddError(Location.Line, $"OutofCanvasException at line: {Location.Line}, column: {Location.Column}");
         else
         {
             Command command = new Spawn(Wall, x, y);
@@ -52,7 +52,7 @@ public class SizeStatement : DSLStatement
     public override bool Validate(Global Global) => Type == IDType.Size;
     public override void Evaluate(Global Global){
         int s = (int)Size.Evaluate(Global);
-        if (s < 1) Global.AddError($"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
+        if (s < 1) Global.AddError(Location.Line, $"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
         else
         {
             Command command = new Size(Wall, s);
@@ -74,7 +74,7 @@ public class LineStatement : DSLStatement
     public override bool Validate(Global Global) => Type == IDType.DrawLine;
     public override void Evaluate(Global Global){
         int d = (int)Distance.Evaluate(Global);
-        if (d < 1) Global.AddError($"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
+        if (d < 1) Global.AddError(Location.Line, $"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
         else
         {
             Instruction instruction = new DrawLine(Wall, (int)DX.Evaluate(Global), (int)DY.Evaluate(Global), d);
@@ -96,7 +96,7 @@ public class CircleStatement : DSLStatement
     public override bool Validate(Global Global) => Type == IDType.DrawCircle;
     public override void Evaluate(Global Global){
         int x = (int)X.Evaluate(Global), y = (int)Y.Evaluate(Global), r = (int)Radius.Evaluate(Global);
-        if (r < 1 || x < 0 || x >= Wall.Pixels.GetLength(0) || y < 0 || y >= Wall.Pixels.GetLength(0)) Global.AddError($"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
+        if (r < 1 || x < 0 || x >= Wall.Pixels.GetLength(0) || y < 0 || y >= Wall.Pixels.GetLength(0)) Global.AddError(Location.Line, $"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
         else
         {
             Instruction instruction = new DrawCircle(Wall, x, y, r);
@@ -122,7 +122,7 @@ public class RectangleStatement : DSLStatement
     public override bool Validate(Global Global) => Type == IDType.DrawRectangle;
     public override void Evaluate(Global Global){
         int d = (int)Distance.Evaluate(Global), h = (int)Height.Evaluate(Global), w = (int)Width.Evaluate(Global);
-        if (d < 0 || h < 0 || w < 0) Global.AddError($"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
+        if (d < 0 || h < 0 || w < 0) Global.AddError(Location.Line, $"InvalidArgumentException at line: {Location.Line}, column: {Location.Column}");
         else
         {
             Instruction instruction = new DrawRectangle(Wall, (int)DX.Evaluate(Global), (int)DY.Evaluate(Global), d, w, h);

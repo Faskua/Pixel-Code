@@ -62,7 +62,7 @@ public class GetColorCountExpression : DSLExpression
         int row1 = (int)Row1.Evaluate(Global), row2 = (int)Row2.Evaluate(Global);
         if (row1 >= Wall.Size || row1 < 0 || col1 >= Wall.Size || col1 < 0 || row2 >= Wall.Size || row2 < 0 || col2 >= Wall.Size || col2 < 0)
         {
-            Global.AddError($"OutOfCanvasException at line: {Location.Line}, column: {Location.Column}");
+            Global.AddError(Location.Line, $"OutOfCanvasException at line: {Location.Line}, column: {Location.Column}");
         }
         Function function = new GetColorCount(Wall, Color, col1, row1, col2, row2);
         return Wall.EvaluateFunction(function);
